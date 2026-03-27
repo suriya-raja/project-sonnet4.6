@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { INDIAN_CITIES } from '@/lib/cities';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,6 +17,47 @@ export default function RegisterPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [detectingCity, setDetectingCity] = useState(false);
+  const [cityDetected, setCityDetected] = useState(false);
+
+  // Auto-detect city from GPS on page load
+  useEffect(() => {
+    if (navigator.geolocation) {
+      setDetectingCity(true);
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&addressdetails=1`,
+              { headers: { 'Accept-Language': 'en' } }
+            );
+            const data = await res.json();
+            if (data?.address) {
+              const city =
+                data.address.city ||
+                data.address.town ||
+                data.address.state_district ||
+                data.address.county ||
+                data.address.village ||
+                data.address.state ||
+                '';
+              if (city) {
+                setFormData(prev => ({ ...prev, city }));
+                setCityDetected(true);
+              }
+            }
+          } catch (err) {
+            console.error('Reverse geocode error:', err);
+          }
+          setDetectingCity(false);
+        },
+        () => {
+          setDetectingCity(false);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,9 +72,8 @@ export default function RegisterPage() {
     setError('');
     setLoading(true);
 
-    // Validation
     if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.city) {
-      setError('Please fill in all required fields');
+      setError('Please fill in all required fields. City is auto-detected — allow location access.');
       setLoading(false);
       return;
     }
@@ -66,7 +105,6 @@ export default function RegisterPage() {
         return;
       }
 
-      // Store token and user data
       localStorage.setItem('nogirr_token', data.token);
       localStorage.setItem('nogirr_user', JSON.stringify(data.user));
 
@@ -147,21 +185,57 @@ export default function RegisterPage() {
             />
           </div>
 
+          {/* Auto-detected city */}
           <div className="form-group">
-            <label className="form-label" htmlFor="register-city">City</label>
-            <select
-              id="register-city"
-              className="form-select"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select your city</option>
-              {INDIAN_CITIES.map(city => (
-                <option key={city} value={city}>{city}</option>
-              ))}
-            </select>
+            <label className="form-label" htmlFor="register-city">
+              City {detectingCity && '— detecting...'}
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                id="register-city"
+                className="form-input"
+                type="text"
+                name="city"
+                placeholder={detectingCity ? 'Detecting your city via GPS...' : 'Your city (auto-detected)'}
+                value={formData.city}
+                onChange={handleChange}
+                required
+                readOnly={detectingCity}
+                style={{
+                  paddingLeft: cityDetected ? '36px' : '16px',
+                }}
+              />
+              {cityDetected && (
+                <span style={{
+                  position: 'absolute',
+                  left: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  fontSize: '1rem',
+                }}>📍</span>
+              )}
+              {detectingCity && (
+                <div className="loading-spinner" style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '18px',
+                  height: '18px',
+                  margin: 0,
+                }} />
+              )}
+            </div>
+            {cityDetected && (
+              <span style={{ fontSize: '0.75rem', color: 'var(--accent-emerald)', marginTop: '4px' }}>
+                ✅ Auto-detected from your location
+              </span>
+            )}
+            {!detectingCity && !cityDetected && (
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                Allow location access for auto-detection, or type manually
+              </span>
+            )}
           </div>
 
           {/* NGO Toggle */}
@@ -183,7 +257,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* NGO Name (conditional) */}
           {formData.is_ngo && (
             <div className="form-group animate-fade-in-up" style={{ animationDuration: '0.3s' }}>
               <label className="form-label" htmlFor="register-ngo-name">NGO Name</label>
@@ -203,7 +276,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             className="btn btn-primary btn-lg btn-full"
-            disabled={loading}
+            disabled={loading || detectingCity}
           >
             {loading ? (
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
