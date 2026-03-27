@@ -338,8 +338,16 @@
         // Using a dark/night earth texture to fit the theme
         const earthTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
         
+        const globeGeometry = new THREE.SphereGeometry(5, 64, 64);
+        const globeMaterial = new THREE.MeshStandardMaterial({ 
+            map: earthTexture,
+            roughness: 1,
+            metalness: 0
+        });
         
-
+        const globeParticles = new THREE.Mesh(globeGeometry, globeMaterial);
+        globeParticles.rotation.z = 23.5 * Math.PI / 180;
+        scene.add(globeParticles);
         // Background Starfield
         const starGeometry = new THREE.BufferGeometry();
         const starCount = 2000;
@@ -381,9 +389,19 @@
         });
 
         // Immersive Scroll: Dive Effect
-          tl.to(".hero-content", { scale: 2.5, opacity: 0, y: -50 }, 0);
+        tl.to(globeParticles.scale, { x: 12, y: 12, z: 12 })
+          .to(globeParticles.position, { y: -5, z: 5 }, 0)
+          .to(".hero-content", { scale: 2.5, opacity: 0, y: -50 }, 0);
 
         // Initial Cinematic Page Load Entrance
+        gsap.fromTo(globeParticles.position, 
+            { z: -80, y: -20 }, 
+            { z: 0, y: 0, duration: 2.5, ease: "power3.out" }
+        );
+        gsap.fromTo(globeParticles.rotation,
+            { x: -Math.PI / 2, y: -Math.PI },
+            { x: 23.5 * Math.PI / 180, y: 0.8, duration: 3, ease: "power3.out" }
+        );
         gsap.fromTo(".hero-content",
             { scale: 0.5, opacity: 0, z: -500 },
             { scale: 1, opacity: 1, z: 0, duration: 2, delay: 0.5, ease: "back.out(1.5)" }
@@ -447,8 +465,8 @@
         // Render Loop
         function animate() {
             requestAnimationFrame(animate);
-            
-            
+            globeParticles.rotation.y += 0.002;
+            globeParticles.rotation.x += 0.001;
 
             gsap.to(camera.position, {
                 x: mouseX * 2,
