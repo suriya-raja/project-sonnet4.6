@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NOGIRR | MISSION CRITICAL ZERO HUNGER</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Animation Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "inverse-surface": "#dfe2f3",
+                "on-tertiary-container": "#523200",
+                "outline-variant": "#3c4a42",
+                "error": "#ffb4ab",
+                "on-secondary-fixed": "#23005c",
+                "primary-fixed": "#6ffbbe",
+                "on-background": "#dfe2f3",
+                "inverse-primary": "#006c49",
+                "on-secondary": "#3c0091",
+                "surface-tint": "#00e5ff",
+                "tertiary": "#ffb95f",
+                "surface-variant": "#222222",
+                "on-surface-variant": "#bbcabf",
+                "on-primary": "#003824",
+                "background": "#0a0a0a",
+                "tertiary-container": "#e29100",
+                "surface-bright": "#353946",
+                "surface-container-highest": "#222222",
+                "on-primary-fixed": "#002113",
+                "primary-fixed-dim": "#00e5ff",
+                "on-tertiary": "#472a00",
+                "secondary-fixed-dim": "#d0bcff",
+                "secondary-container": "#571bc1",
+                "secondary-fixed": "#e9ddff",
+                "on-secondary-container": "#c4abff",
+                "on-surface": "#dfe2f3",
+                "tertiary-fixed-dim": "#ffb95f",
+                "on-secondary-fixed-variant": "#5516be",
+                "error-container": "#93000a",
+                "primary": "#00e5ff",
+                "surface-container": "#141414",
+                "surface-container-lowest": "#030303",
+                "inverse-on-surface": "#2c303d",
+                "on-primary-fixed-variant": "#005236",
+                "outline": "#86948a",
+                "surface-dim": "#0a0a0a",
+                "on-error": "#690005",
+                "on-error-container": "#ffdad6",
+                "tertiary-fixed": "#ffddb8",
+                "on-tertiary-fixed": "#2a1700",
+                "on-primary-container": "#00422b",
+                "surface-container-low": "#111111",
+                "primary-container": "#00b4d8",
+                "on-tertiary-fixed-variant": "#653e00",
+                "secondary": "#d0bcff",
+                "surface-container-high": "#1a1a1a",
+                "surface": "#0a0a0a"
+              },
+              fontFamily: {
+                "headline": ["Space Grotesk"],
+                "body": ["Manrope"],
+                "label": ["Manrope"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #030303;
+            color: #dfe2f3;
+            overflow-x: hidden;
+        }
+        .grain-overlay {
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCzyLZt37xz3Kw2cU2SoGnC6TRMPqma6dgAqenb6C15VlX9TqZRmvqatlgT4_BCZQ7flwlWZo7uTGMClIM0FKXXPHmyylojX5ZmYDypB1Znlu5liW4EUeT6G_O4ivs9zi-FXg-G62oYw_5wljsGJi83koJeVNfGjsTTaBJn3k39HOPMQx0Wo_grZc0pb9HEAq4l1IRoYv5k8Wp4NuBN1bcv2LETr7N-PwIaLaeP0Q2vxiRjf_wNjl46bwBYPN847-odTY7EmQLYMyI);
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .shimmer {
+            background: linear-gradient(90deg, #00e5ff 0%, #00b4d8 50%, #00e5ff 100%);
+            background-size: 200% auto;
+            animation: shimmer 4s linear infinite;
+        }
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+        .glass-card {
+            background: rgba(49, 52, 66, 0.4);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            transform-style: preserve-3d;
+        }
+        .glow-cyan { filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.3)); }
+        .glow-purple { filter: drop-shadow(0 0 15px rgba(208, 188, 255, 0.3)); }
+        .glow-amber { filter: drop-shadow(0 0 15px rgba(255, 185, 95, 0.3)); }
+        
+        #three-canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            z-index: 10;
+        }
+
+        html.lenis {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-container selection:text-on-primary-container">
+<div class="fixed inset-0 grain-overlay"></div>
+<!-- Three.js Scene Container -->
+<div id="three-canvas-container"></div>
+<!-- Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-slate-900/40 backdrop-blur-3xl border-b border-cyan-500/10">
+<div class="flex justify-between items-center px-8 py-6 max-w-[1920px] mx-auto">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-cyan-400">language</span>
+<span class="text-2xl font-black tracking-tighter bg-gradient-to-r from-cyan-400 to-cyan-600 bg-clip-text text-transparent font-headline uppercase">NOGIRR</span>
+</div>
+<div class="hidden md:flex gap-12 items-center">
+<a class="font-headline tracking-tight font-bold uppercase text-cyan-400 hover:text-cyan-300 transition-all" href="#">EXPLORE</a>
+<a class="font-headline tracking-tight font-bold uppercase text-slate-400 hover:text-cyan-300 transition-all" href="#">NETWORK</a>
+<a class="font-headline tracking-tight font-bold uppercase text-slate-400 hover:text-cyan-300 transition-all" href="#">IMPACT</a>
+<button onclick="window.location.href='/login'" class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-headline font-bold text-sm tracking-widest uppercase hover:scale-95 transition-all">MISSION CONTROL</button>
+</div>
+<button class="md:hidden text-cyan-400">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</nav>
+<main class="relative z-10">
+<!-- HERO SECTION -->
+<section class="relative h-screen flex flex-col items-center justify-center overflow-hidden" id="hero">
+<div class="hero-content text-center px-6 max-w-5xl">
+<h1 class="font-headline text-7xl md:text-9xl font-black tracking-tighter mb-4 shimmer bg-clip-text text-transparent uppercase">NOGIRR</h1>
+<p class="font-headline text-2xl md:text-3xl text-on-surface-variant font-light tracking-[0.2em] mb-12 uppercase">Zero Hunger. Zero Waste.</p>
+<div class="flex flex-wrap justify-center gap-6">
+<button onclick="window.location.href='/login'" class="group relative px-8 py-4 bg-primary-container text-on-primary-container rounded-lg font-headline font-bold uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95">
+<span class="relative z-10">Donate Food</span>
+<div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+</button>
+<button onclick="window.location.href='/login'" class="px-8 py-4 glass-card text-primary font-headline font-bold uppercase tracking-widest rounded-lg hover:bg-surface-container transition-all">
+                        Rescue Produce
+                    </button>
+</div>
+</div>
+<div class="absolute bottom-10 animate-bounce flex flex-col items-center gap-2 text-on-surface-variant/40">
+<span class="text-xs font-headline tracking-widest uppercase">Initiate Descent</span>
+<span class="material-symbols-outlined">keyboard_double_arrow_down</span>
+</div>
+</section>
+<!-- THE PROBLEM -->
+<section class="py-32 px-8 relative overflow-hidden" id="crisis">
+<div class="max-w-7xl mx-auto">
+<div class="grid lg:grid-cols-2 gap-20 items-center">
+<div class="crisis-text-left opacity-0">
+<h2 class="font-headline text-5xl md:text-7xl font-bold mb-8 text-on-surface leading-tight">THE CRISIS <br/><span class="text-tertiary">INEFFICIENCY.</span></h2>
+<div class="space-y-12">
+<div class="flex items-start gap-6">
+<span class="text-6xl font-headline font-black text-tertiary/20">01</span>
+<div>
+<h3 class="text-2xl font-headline font-bold text-on-surface mb-2">₹90,000 CR WASTED</h3>
+<p class="text-on-surface-variant text-lg leading-relaxed">Annual value of food wasted in India alone due to fractured supply chains and logistics failure.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="crisis-card-right opacity-0">
+<div class="glass-card p-12 rounded-3xl text-center relative z-10 overflow-hidden">
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-tertiary/10 blur-[100px]"></div>
+<div class="relative z-10">
+<span class="text-[120px] font-headline font-black text-tertiary glow-amber leading-none">40%</span>
+<p class="text-2xl font-headline tracking-[0.3em] uppercase text-on-surface-variant mt-4">Of Food Wasted</p>
+<div class="mt-8 h-1 w-full bg-surface-container overflow-hidden rounded-full">
+<div class="h-full bg-tertiary w-[40%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- INTERVENTION UNITS -->
+<section class="py-32 px-8">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-20">
+<h2 class="font-headline text-4xl md:text-5xl font-bold mb-4 uppercase">Neural Intervention Units</h2>
+<div class="h-1 w-24 bg-primary mx-auto"></div>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="tilt-card glass-card p-8 rounded-2xl group transition-all duration-500 flex flex-col h-full">
+<div class="w-16 h-16 rounded-xl bg-primary-container/20 flex items-center justify-center mb-8 text-primary group-hover:glow-cyan transition-all">
+<span class="material-symbols-outlined text-4xl">volunteer_activism</span>
+</div>
+<h3 class="text-2xl font-headline font-bold mb-4 uppercase">Surplus Rescue</h3>
+<p class="text-on-surface-variant mb-8 flex-grow">AI-routed logistics for hotels and restaurants to donate surplus food to verified local distribution hubs within minutes.</p>
+<img alt="Rescue" class="w-full h-48 object-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeEN124YGn9KlTuu4Gkaz-xG_UX2fr2gofL98vi9rKP95dsUb285ZUm14Lfl8aVE-0HO4TylGx_USR8FzTfg5QIXr7agB_hEUzPwe-QCPQrhdQAbouBk9TJ4XsPIiB_3wj1GzDXSPnjd_EGputjXMi8_ddGYRFZNz3nXqxPiiOsqD1CFo5nuX7JaCXY1Vn5CmUsUwOVDCYXOHehckqbSxp1SuzUVUeiWJGkbOwVNxKXaJah0LGKRt-YFDQl7PbnLwOZ548zrD3N14"/>
+</div>
+<div class="tilt-card glass-card p-8 rounded-2xl group transition-all duration-500 flex flex-col h-full">
+<div class="w-16 h-16 rounded-xl bg-secondary-container/20 flex items-center justify-center mb-8 text-secondary group-hover:glow-purple transition-all">
+<span class="material-symbols-outlined text-4xl">agriculture</span>
+</div>
+<h3 class="text-2xl font-headline font-bold mb-4 uppercase">Farm-Direct Intel</h3>
+<p class="text-on-surface-variant mb-8 flex-grow">Connecting small-scale farmers directly to processing units, preventing post-harvest loss through real-time demand mapping.</p>
+<img alt="Farm" class="w-full h-48 object-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnMgX4GBOtI4K61DkjMomQV4XgI2OGND7d9c05N4T8QV1Jruqb6ynrDVgNdyeRu8Q7YaVxgf9moygWJqT1VYsmzsFIjsR_WtzttlOKIyY9G-haBoEz3gInH0RNCdoMWkWEs32Xmk3jlL6avJ2zow2SgWKw1x4iwr87bS3W_BXQb-RNKu4YqDJbPTv465kn6CuR4cz1G76Y25Pfh4kx3X5eS7jAJnz5EmFihQLE3B6xwKF2nRloh6zllcuWibEradGe_IX3qGyHd-g"/>
+</div>
+<div class="tilt-card glass-card p-8 rounded-2xl group transition-all duration-500 flex flex-col h-full">
+<div class="w-16 h-16 rounded-xl bg-tertiary-container/20 flex items-center justify-center mb-8 text-tertiary group-hover:glow-amber transition-all">
+<span class="material-symbols-outlined text-4xl">analytics</span>
+</div>
+<h3 class="text-2xl font-headline font-bold mb-4 uppercase">Nutrient Audit</h3>
+<p class="text-on-surface-variant mb-8 flex-grow">Advanced computer vision analyzing food quality and nutritional density to ensure zero compromise on community health.</p>
+<img alt="Audit" class="w-full h-48 object-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlQG6PGXKQzUd_YC2BPnpkGimgwZr3Bmcy7QhRO84ld40Bgs3kV2MLX0Mb5b1CMbTtcBlClVjZSno61xutrw0B8Zun0L4byK_vjrFO5I08Px05Yk2UEtXu89wc2EH-4jSJHyiN1ApXzmeJD4fkz1jNlLuVhAGeu0MO5tfKUgfJZ4ZayiBbbGDqFBj6akggpbZ1TQjsaiEVbdGRbebjdarPiDuS8rBuqhhDd83bAlhRq9S5F8ip-9U-cDQF2xbWSV1iTW56UJAz-B8"/>
+</div>
+</div>
+</div>
+</section>
+<!-- IMPACT -->
+<section class="py-24 bg-surface-container-highest border-y border-white/5 relative overflow-hidden">
+<div class="max-w-7xl mx-auto px-8 relative z-10">
+<div class="grid md:grid-cols-3 gap-16 text-center">
+<div>
+<div class="text-6xl md:text-7xl font-headline font-black text-primary mb-4 glow-cyan">12,450</div>
+<div class="text-on-surface-variant font-headline tracking-[0.3em] uppercase">KG Food Rescued</div>
+</div>
+<div>
+<div class="text-6xl md:text-7xl font-headline font-black text-secondary mb-4 glow-purple">8,200</div>
+<div class="text-on-surface-variant font-headline tracking-[0.3em] uppercase">Lives Nourished</div>
+</div>
+<div>
+<div class="text-6xl md:text-7xl font-headline font-black text-tertiary mb-4 glow-amber">340</div>
+<div class="text-on-surface-variant font-headline tracking-[0.3em] uppercase">Partner Farmers</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA -->
+<section class="py-32 px-8 text-center relative overflow-hidden">
+<div class="max-w-4xl mx-auto">
+<h2 class="font-headline text-5xl md:text-8xl font-black mb-12 uppercase leading-none text-on-surface">
+                    Every meal <span class="shimmer bg-clip-text text-transparent">matters.</span>
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<button onclick="window.location.href='/register'" class="p-8 glass-card rounded-2xl border-primary/20 hover:border-primary/50 transition-all flex flex-col items-center">
+<span class="material-symbols-outlined text-4xl text-primary mb-4">handshake</span>
+<span class="font-headline font-bold uppercase tracking-widest">Join as Donor</span>
+</button>
+<button onclick="window.location.href='/register'" class="p-8 glass-card rounded-2xl border-secondary/20 hover:border-secondary/50 transition-all flex flex-col items-center">
+<span class="material-symbols-outlined text-4xl text-secondary mb-4">groups</span>
+<span class="font-headline font-bold uppercase tracking-widest">Join as NGO</span>
+</button>
+<button onclick="window.location.href='/register'" class="p-8 glass-card rounded-2xl border-tertiary/20 hover:border-tertiary/50 transition-all flex flex-col items-center">
+<span class="material-symbols-outlined text-4xl text-tertiary mb-4">moped</span>
+<span class="font-headline font-bold uppercase tracking-widest">Join as Runner</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-slate-950/80 backdrop-blur-md relative w-full py-12 border-t border-cyan-500/5">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 gap-8 max-w-[1920px] mx-auto">
+<div class="text-left">
+<span class="font-headline font-bold text-cyan-400 text-2xl tracking-tighter uppercase">NOGIRR</span>
+<p class="font-body text-xs tracking-widest uppercase text-slate-500 mt-2">© 2026 NOGIRR INTELLIGENCE. MISSION CRITICAL ZERO HUNGER.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-body text-sm tracking-widest uppercase text-slate-500 hover:text-purple-400 transition-colors" href="#">NEURAL NETWORK</a>
+<a class="font-body text-sm tracking-widest uppercase text-slate-500 hover:text-purple-400 transition-colors" href="#">SDG 2 COMPLIANCE</a>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 border border-cyan-500/20 rounded-full flex items-center justify-center text-cyan-400">
+<span class="material-symbols-outlined text-xl">verified_user</span>
+</div>
+<div class="text-xs font-headline font-bold text-cyan-400 tracking-widest uppercase text-left">SDG 2<br/>TARGET: 2030</div>
+</div>
+</div>
+</footer>
+<script>
+        // Smooth Scroll
+        const lenis = new Lenis();
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // Three.js Scene Setup
+        const container = document.getElementById('three-canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.05);
+        scene.add(ambientLight);
+        
+        const dirLight = new THREE.DirectionalLight(0xffffff, 3.0);
+        dirLight.position.set(5, 3, 2);
+        scene.add(dirLight);
+        const pointLight = new THREE.PointLight(0x00e5ff, 2);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // World Globe
+        const textureLoader = new THREE.TextureLoader();
+        // Using a dark/night earth texture to fit the theme
+        const earthTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
+        
+        const globeGeometry = new THREE.SphereGeometry(4, 64, 64);
+        const globeMaterial = new THREE.MeshStandardMaterial({
+            map: earthTexture,
+            roughness: 0.4,
+            metalness: 0.1,
+            transparent: true,
+            opacity: 1.0
+        });
+
+        // We keep the variable name "globeParticles" so the GSAP scroll animations below still work perfectly
+        const globeParticles = new THREE.Mesh(globeGeometry, globeMaterial);
+        
+        // Tilt the earth a bit like the real planet
+        globeParticles.rotation.z = 23.5 * Math.PI / 180;
+        
+        scene.add(globeParticles);
+
+        // Background Starfield
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = 2000;
+        const starPositions = new Float32Array(starCount * 3);
+        for (let i = 0; i < starCount * 3; i++) {
+            starPositions[i] = (Math.random() - 0.5) * 100;
+        }
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.05, transparent: true, opacity: 0.3 });
+        const starField = new THREE.Points(starGeometry, starMaterial);
+        scene.add(starField);
+
+
+        // Astronaut and Asteroids
+        let astronaut;
+        const gltfLoader = new THREE.GLTFLoader();
+        gltfLoader.load('https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/Astronaut.glb', (gltf) => {
+            astronaut = gltf.scene;
+            astronaut.scale.set(2.0, 2.0, 2.0);
+            astronaut.position.set(-3, 0, -1);
+            scene.add(astronaut);
+        });
+
+        
+
+        
+
+        camera.position.z = 10;
+
+        // Interaction
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        // GSAP Scroll Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: 1
+            }
+        });
+
+        tl.to(globeParticles.scale, { x: 0.5, y: 0.5, z: 0.5 })
+          .to(globeParticles.position, { y: 2, z: -5 }, 0)
+          .to(".hero-content", { opacity: 0, y: -100 }, 0);
+
+        gsap.fromTo(".crisis-text-left", 
+            { opacity: 0, x: -100, z: -500 }, 
+            { 
+                opacity: 1, x: 0, z: 0, 
+                scrollTrigger: {
+                    trigger: "#crisis",
+                    start: "top 80%",
+                    end: "top 20%",
+                    scrub: 1
+                } 
+            }
+        );
+        gsap.fromTo(".crisis-card-right", 
+            { opacity: 0, x: 100, z: -500 }, 
+            { 
+                opacity: 1, x: 0, z: 0, 
+                scrollTrigger: {
+                    trigger: "#crisis",
+                    start: "top 80%",
+                    end: "top 20%",
+                    scrub: 1
+                } 
+            }
+        );
+
+        // Tilt Cards
+        const cards = document.querySelectorAll('.tilt-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                
+                gsap.to(card, {
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    transformPerspective: 1000,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    rotateX: 0,
+                    rotateY: 0,
+                    duration: 0.8,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            });
+        });
+
+        // Render Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            globeParticles.rotation.y += 0.002;
+            globeParticles.rotation.x += 0.001;
+
+            gsap.to(camera.position, {
+                x: mouseX * 2,
+                y: -mouseY * 2,
+                duration: 2,
+                ease: "power2.out"
+            });
+            
+            starField.rotation.y += 0.0002;
+            const positions = starGeometry.attributes.position.array;
+            for(let i = 2; i < positions.length; i+=3) {
+                positions[i] += 0.08;
+                if (positions[i] > 20) {
+                    positions[i] = -80;
+                }
+            }
+            starGeometry.attributes.position.needsUpdate = true;
+
+
+            if (astronaut) {
+                const time = Date.now() * 0.001;
+                astronaut.position.x = Math.sin(time * 0.2) * 8; // Float wide left and right
+                astronaut.position.y = Math.cos(time * 0.15) * 5; // Float high and low
+                astronaut.position.z = Math.sin(time * 0.3) * 3 - 2; // Move smoothly back and front
+                astronaut.rotation.x = Math.sin(time * 0.2) * 0.5;
+                astronaut.rotation.y += 0.003;
+                astronaut.rotation.z = Math.cos(time * 0.2) * 0.5;
+            }
+
+            
+
+            
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body></html>
