@@ -322,7 +322,7 @@
         container.appendChild(renderer.domElement);
 
         // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
         scene.add(ambientLight);
         const pointLight = new THREE.PointLight(0x00e5ff, 2);
         pointLight.position.set(5, 5, 5);
@@ -339,7 +339,7 @@
             roughness: 0.4,
             metalness: 0.1,
             transparent: true,
-            opacity: 1.0
+            opacity: 0.9
         });
 
         // We keep the variable name "globeParticles" so the GSAP scroll animations below still work perfectly
