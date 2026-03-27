@@ -51,7 +51,7 @@ export default function GlobeBackground() {
 
     // DOTTED MANNER: Random "continents" points or bumps using a points layer
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 2000;
+    const particlesCount = 5000;
     const posArray = new Float32Array(particlesCount * 3);
     
     for(let i=0; i<particlesCount * 3; i+=3) {
@@ -66,10 +66,10 @@ export default function GlobeBackground() {
     }
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.03,
-      color: 0x0088ff, // Wave blue dotted particles
+      size: 0.15,
+      color: 0x00d2ff, // Bright Wave blue
       transparent: true,
-      opacity: 0.8,
+      opacity: 1.0,
       blending: THREE.AdditiveBlending
     });
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
@@ -79,47 +79,45 @@ export default function GlobeBackground() {
     const floatingShapes = new THREE.Group();
     scene.add(floatingShapes);
     
-    for (let i = 0; i < 15; i++) {
-      const geo = new THREE.OctahedronGeometry(Math.random() * 0.2 + 0.05);
-      const mat = new THREE.MeshBasicMaterial({
-        color: 0x00bbff, // Lighter wave blue
-        wireframe: true,
-        transparent: true,
-        opacity: 0.4
-      });
-      const shape = new THREE.Mesh(geo, mat);
-      
-      shape.position.x = (Math.random() - 0.5) * 12;
-      shape.position.y = (Math.random() - 0.5) * 10;
-      shape.position.z = (Math.random() - 0.5) * 5 - 2;
-      
-      shape.userData = {
-        rx: Math.random() * 0.02,
-        ry: Math.random() * 0.02,
-        rz: Math.random() * 0.02
-      };
-      
-      floatingShapes.add(shape);
+    for (let i = 0; i < 20; i++) {
+        const geo = new THREE.IcosahedronGeometry(Math.random() * 0.15 + 0.05, 0);
+        const mat = new THREE.MeshBasicMaterial({
+            color: 0x00d2ff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        const shape = new THREE.Mesh(geo, mat);
+        
+        shape.position.set(
+            (Math.random() - 0.5) * 15,
+            (Math.random() - 0.5) * 12,
+            (Math.random() - 0.5) * 8 - 3
+        );
+        
+        shape.userData = {
+            rx: Math.random() * 0.01,
+            ry: Math.random() * 0.01,
+            rz: Math.random() * 0.01
+        };
+        
+        floatingShapes.add(shape);
     }
 
     // LIGHTS
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
     
-    const pointLight = new THREE.PointLight(0x0088ff, 2, 50); // Wave blue light
-    pointLight.position.set(5, 3, 5);
+    const pointLight = new THREE.PointLight(0x00d2ff, 3, 60); 
+    pointLight.position.set(10, 5, 10);
     scene.add(pointLight);
 
-    const backLight = new THREE.PointLight(0x0044ff, 1.5, 50); // Deep wave blue
-    backLight.position.set(-5, -3, -5);
-    scene.add(backLight);
-
-    camera.position.z = 6.5;
+    camera.position.z = 5.0; // Zoomed in closer
 
     // ANIMATION LOOP
     let animationId;
     const animate = () => {
-      globe.rotation.y += 0.001; 
+      globe.rotation.y += 0.0015; 
       globe.rotation.x = 0.2; 
       
       floatingShapes.children.forEach(shape => {
@@ -168,7 +166,7 @@ export default function GlobeBackground() {
         height: '100%',
         zIndex: 0,
         overflow: 'hidden',
-        background: '#0b101e'
+        // Transparent background so we don't block anything
       }} 
     />
   );
