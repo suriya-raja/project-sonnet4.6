@@ -21,20 +21,6 @@ export default function ThreeBackground() {
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-      // Realistic Earth Globe (Aqua Blue theme variant)
-      const texLoader = new THREE.TextureLoader();
-      const earthTex = texLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
-      const globeGeo = new THREE.SphereGeometry(2, 64, 64);
-      const globeMat = new THREE.MeshStandardMaterial({ 
-        map: earthTex,
-        roughness: 0.8,
-        metalness: 0.2
-      });
-      const globe = new THREE.Mesh(globeGeo, globeMat);
-      globe.position.set(2, -2, -5);
-      globe.rotation.z = 0.2;
-      scene.add(globe);
-
       // Data streams / Particles (Aqua Blue theme)
       const particlesGeo = new THREE.BufferGeometry();
       const particleCount = 2000;
@@ -53,13 +39,6 @@ export default function ThreeBackground() {
       const particles = new THREE.Points(particlesGeo, particlesMat);
       scene.add(particles);
 
-      // Lights
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-      scene.add(ambientLight);
-      const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-      dirLight.position.set(5, 5, 5);
-      scene.add(dirLight);
-
       camera.position.z = 5;
 
       let mouseX = 0, mouseY = 0;
@@ -70,9 +49,6 @@ export default function ThreeBackground() {
       window.addEventListener('mousemove', onMouseMove);
 
       const animate = () => {
-        globe.rotation.y += 0.002;
-        globe.rotation.x += 0.001;
-
         particles.rotation.y += 0.0005;
         const positions = particlesGeo.attributes.position.array;
         for (let i = 1; i < particleCount * 3; i += 3) {
