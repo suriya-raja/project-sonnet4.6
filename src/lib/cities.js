@@ -1,0 +1,20 @@
+export const INDIAN_CITIES = [
+  "Agra", "Ahmedabad", "Allahabad", "Amritsar", "Aurangabad",
+  "Bangalore", "Bhopal", "Bhubaneswar",
+  "Chandigarh", "Chennai", "Coimbatore",
+  "Dehradun", "Delhi", "Dhanbad",
+  "Faridabad",
+  "Ghaziabad", "Gurgaon", "Gwalior",
+  "Howrah", "Hyderabad",
+  "Indore",
+  "Jabalpur", "Jaipur", "Jodhpur",
+  "Kanpur", "Kochi", "Kolkata",
+  "Lucknow", "Ludhiana",
+  "Madurai", "Mangalore", "Meerut", "Mumbai", "Mysore",
+  "Nagpur", "Nashik", "Navi Mumbai", "Noida",
+  "Patna", "Pune",
+  "Raipur", "Rajkot", "Ranchi",
+  "Srinagar", "Surat",
+  "Thane", "Trivandrum",
+  "Vadodara", "Varanasi", "Vijayawada", "Visakhapatnam"
+].sort();
