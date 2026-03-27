@@ -373,46 +373,12 @@
         const gltfLoader = new THREE.GLTFLoader();
         gltfLoader.load('https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/Astronaut.glb', (gltf) => {
             astronaut = gltf.scene;
-            astronaut.scale.set(0.6, 0.6, 0.6);
+            astronaut.scale.set(2.0, 2.0, 2.0);
             astronaut.position.set(-3, 0, -1);
             scene.add(astronaut);
         });
 
-        // Floating Asteroids
-        const asteroids = [];
-        const astGeo = new THREE.DodecahedronGeometry(0.5, 1);
-        for(let i=0; i<40; i++) {
-            const mat = new THREE.MeshStandardMaterial({
-                color: 0x555555,
-                roughness: 0.9,
-                metalness: 0.1
-            });
-            const ast = new THREE.Mesh(astGeo, mat);
-            
-            const scale = Math.random() * 0.8 + 0.2;
-            ast.scale.set(scale, scale, scale);
-            
-            ast.position.set(
-                (Math.random() - 0.5) * 50,
-                (Math.random() - 0.5) * 50,
-                (Math.random() - 0.5) * 30 - 10
-            );
-            
-            ast.userData.vel = new THREE.Vector3(
-                (Math.random() - 0.5) * 0.05,
-                (Math.random() - 0.5) * 0.05,
-                (Math.random() - 0.5) * 0.05
-            );
-            
-            ast.userData.spin = new THREE.Vector3(
-                (Math.random() - 0.5) * 0.02,
-                (Math.random() - 0.5) * 0.02,
-                (Math.random() - 0.5) * 0.02
-            );
-            
-            scene.add(ast);
-            asteroids.push(ast);
-        }
+        
 
         
 
@@ -530,20 +496,7 @@
                 astronaut.rotation.z = Math.cos(time * 0.2) * 0.5;
             }
 
-            asteroids.forEach(ast => {
-                ast.position.add(ast.userData.vel);
-                ast.rotation.x += ast.userData.spin.x;
-                ast.rotation.y += ast.userData.spin.y;
-                ast.rotation.z += ast.userData.spin.z;
-
-                if (ast.position.x > 25 || ast.position.x < -25 || ast.position.y > 25 || ast.position.y < -25) {
-                    ast.position.set(
-                        (Math.random() - 0.5) * 40,
-                        (Math.random() - 0.5) * 40,
-                        (Math.random() - 0.5) * 30 - 10
-                    );
-                }
-            });
+            
 
             
 
