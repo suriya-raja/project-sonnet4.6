@@ -373,36 +373,12 @@
         const gltfLoader = new THREE.GLTFLoader();
         gltfLoader.load('https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/Astronaut.glb', (gltf) => {
             astronaut = gltf.scene;
-            astronaut.scale.set(0.6, 0.6, 0.6);
+            astronaut.scale.set(1.5, 1.5, 1.5);
             astronaut.position.set(-3, 0, -1);
             scene.add(astronaut);
         });
 
-        // Comets and Shooting Stars
-
-        const comets = [];
-        for (let i = 0; i < 30; i++) {
-            const length = Math.random() * 2 + 1;
-            const geometry = new THREE.CylinderGeometry(0.005, 0.03, length, 8);
-            geometry.rotateX(Math.PI / 2);
-            const material = new THREE.MeshBasicMaterial({
-                color: Math.random() > 0.5 ? 0x00e5ff : 0xffffff,
-                transparent: true,
-                opacity: 0.8
-            });
-            const comet = new THREE.Mesh(geometry, material);
-            comet.position.set(
-                (Math.random() - 0.5) * 50,
-                (Math.random() - 0.5) * 50,
-                (Math.random() - 0.5) * 30 - 10
-            );
-            const speed = Math.random() * 0.03 + 0.01;
-            comet.userData.velocity = new THREE.Vector3(speed, -speed, Math.random() * speed);
-            const targetPos = comet.position.clone().add(comet.userData.velocity);
-            comet.lookAt(targetPos);
-            scene.add(comet);
-            comets.push(comet);
-        }
+        
 
         camera.position.z = 10;
 
@@ -497,27 +473,28 @@
                 ease: "power2.out"
             });
             
-            starField.rotation.y += 0.0005;
+            starField.rotation.y += 0.0002;
+            const positions = starGeometry.attributes.position.array;
+            for(let i = 2; i < positions.length; i+=3) {
+                positions[i] += 0.08;
+                if (positions[i] > 20) {
+                    positions[i] = -80;
+                }
+            }
+            starGeometry.attributes.position.needsUpdate = true;
 
 
             if (astronaut) {
                 const time = Date.now() * 0.001;
-                astronaut.position.y = Math.sin(time) * 0.5;
-                astronaut.position.x = -3.5 + Math.cos(time * 0.5) * 0.5;
-                astronaut.rotation.y += 0.002;
-                astronaut.rotation.z = Math.sin(time * 0.5) * 0.1;
+                astronaut.position.x = Math.sin(time * 0.2) * 8; // Float wide left and right
+                astronaut.position.y = Math.cos(time * 0.15) * 5; // Float high and low
+                astronaut.position.z = Math.sin(time * 0.3) * 3 - 2; // Move smoothly back and front
+                astronaut.rotation.x = Math.sin(time * 0.2) * 0.5;
+                astronaut.rotation.y += 0.003;
+                astronaut.rotation.z = Math.cos(time * 0.2) * 0.5;
             }
 
-            comets.forEach((comet) => {
-                comet.position.add(comet.userData.velocity);
-                if (comet.position.x > 25 || comet.position.y < -25 || comet.position.z > 20) {
-                    comet.position.set(
-                        -25 - Math.random() * 10,
-                        25 + Math.random() * 10,
-                        (Math.random() - 0.5) * 30 - 10
-                    );
-                }
-            });
+            
 
             renderer.render(scene, camera);
         }
