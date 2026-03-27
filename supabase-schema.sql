@@ -95,8 +95,6 @@ ALTER TABLE farm_listings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow all on users" ON users FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all on food_listings" ON food_listings FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all on orders" ON orders FOR ALL USING (true) WITH CHECK (true);
-<<<<<<< HEAD
-
 -- ========================================
 -- UPDATES FOR GOOGLE SSO & OTP PASSWORD RESET
 -- ========================================
@@ -108,7 +106,7 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_otp_expires_at TIMESTAMPTZ;
 ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
 ALTER TABLE users ALTER COLUMN phone DROP NOT NULL;
 ALTER TABLE users ALTER COLUMN city DROP NOT NULL;
-=======
+
 CREATE POLICY "Allow all on farm_listings" ON farm_listings FOR ALL USING (true) WITH CHECK (true);
 
 -- RPC function to increment user score
@@ -121,4 +119,3 @@ BEGIN
   WHERE id = user_id;
 END;
 $$ LANGUAGE plpgsql;
->>>>>>> 426c9821a5fc61d181e61627446731784926f276
