@@ -49,9 +49,28 @@ export default function GlobeBackground() {
     const wireframeGlobe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
     globe.add(wireframeGlobe);
 
+    // dots are actually small squares by default in Three.js Points
+    // We create a tiny circular texture to make them look like "real dots"
+    const createDotTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      gradient.addColorStop(0.2, 'rgba(0, 210, 255, 1)');
+      gradient.addColorStop(0.5, 'rgba(0, 210, 255, 0.3)');
+      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 64, 64);
+      return new THREE.CanvasTexture(canvas);
+    };
+
+    const dotTexture = createDotTexture();
+
     // DOTTED MANNER: Random "continents" points or bumps using a points layer
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 5000;
+    const particlesCount = 8000;
     const posArray = new Float32Array(particlesCount * 3);
     
     for(let i=0; i<particlesCount * 3; i+=3) {
@@ -66,11 +85,13 @@ export default function GlobeBackground() {
     }
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.15,
+      size: 0.05,
+      map: dotTexture,
       color: 0x00d2ff, // Bright Wave blue
       transparent: true,
-      opacity: 1.0,
-      blending: THREE.AdditiveBlending
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
     });
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     globe.add(particlesMesh);
@@ -151,6 +172,7 @@ export default function GlobeBackground() {
       wireframeMaterial.dispose();
       particlesGeometry.dispose();
       particlesMaterial.dispose();
+      dotTexture.dispose();
       renderer.dispose();
     };
   }, []);
