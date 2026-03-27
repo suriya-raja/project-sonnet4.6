@@ -14,30 +14,30 @@
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
-  --accent-emerald: #10b981;
-  --accent-emerald-light: #34d399;
-  --accent-emerald-dark: #059669;
-  --accent-emerald-glow: rgba(16, 185, 129, 0.3);
+  --accent-emerald: #00e5ff;
+  --accent-emerald-light: #70f0ff;
+  --accent-emerald-dark: #00b4d8;
+  --accent-emerald-glow: rgba(0, 229, 255, 0.3);
 
-  --accent-amber: #f59e0b;
-  --accent-amber-light: #fbbf24;
-  --accent-amber-dark: #d97706;
-  --accent-amber-glow: rgba(245, 158, 11, 0.3);
+  --accent-amber: #00d2ff;
+  --accent-amber-light: #9af1ff;
+  --accent-amber-dark: #0099ff;
+  --accent-amber-glow: rgba(0, 210, 255, 0.3);
 
   --accent-red: #ef4444;
   --accent-blue: #3b82f6;
   --accent-purple: #8b5cf6;
 
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(16, 185, 129, 0.3);
+  --border-glow: rgba(0, 229, 255, 0.3);
 
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow-emerald: 0 0 20px rgba(16, 185, 129, 0.2), 0 0 60px rgba(16, 185, 129, 0.1);
-  --shadow-glow-amber: 0 0 20px rgba(245, 158, 11, 0.2), 0 0 60px rgba(245, 158, 11, 0.1);
-  --shadow-glow-gold: 0 0 30px rgba(255, 215, 0, 0.3), 0 0 60px rgba(255, 215, 0, 0.15);
+  --shadow-glow-emerald: 0 0 20px rgba(0, 229, 255, 0.2), 0 0 60px rgba(0, 229, 255, 0.1);
+  --shadow-glow-amber: 0 0 20px rgba(0, 210, 255, 0.2), 0 0 60px rgba(0, 210, 255, 0.1);
+  --shadow-glow-gold: 0 0 30px rgba(0, 229, 255, 0.3), 0 0 60px rgba(0, 229, 255, 0.15);
 
   /* Typography */
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -99,9 +99,9 @@ body::before {
   right: 0;
   bottom: 0;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(245, 158, 11, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(0, 229, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0, 210, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(0, 153, 255, 0.05) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }

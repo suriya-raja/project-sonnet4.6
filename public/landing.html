@@ -348,7 +348,7 @@
             starPositions[i] = (Math.random() - 0.5) * 100;
         }
         starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-        const starMaterial = new THREE.PointsMaterial({ color: 0xfbbf24, size: 0.08, transparent: true, opacity: 0.3 });
+        const starMaterial = new THREE.PointsMaterial({ color: 0x00e5ff, size: 0.1, transparent: true, opacity: 0.3 });
         const starField = new THREE.Points(starGeometry, starMaterial);
         scene.add(starField);
 
@@ -380,19 +380,10 @@
             }
         });
 
-        // Immersive Scroll: Dive into the Earth!
-        
-          .to(".hero-content", { scale: 2.5, opacity: 0, y: -50 }, 0);
+        // Immersive Scroll: Dive Effect
+          tl.to(".hero-content", { scale: 2.5, opacity: 0, y: -50 }, 0);
 
         // Initial Cinematic Page Load Entrance
-        gsap.fromTo(globeParticles.position, 
-            { z: -80, y: -20 }, 
-            { z: 0, y: 0, duration: 2.5, ease: "power3.out" }
-        );
-        gsap.fromTo(globeParticles.rotation,
-            { x: -Math.PI / 2, y: -Math.PI },
-            { x: 23.5 * Math.PI / 180, y: 0.8, duration: 3, ease: "power3.out" }
-        );
         gsap.fromTo(".hero-content",
             { scale: 0.5, opacity: 0, z: -500 },
             { scale: 1, opacity: 1, z: 0, duration: 2, delay: 0.5, ease: "back.out(1.5)" }
