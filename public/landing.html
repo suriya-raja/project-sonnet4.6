@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <!-- Animation Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
@@ -322,8 +323,12 @@
         container.appendChild(renderer.domElement);
 
         // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.05);
         scene.add(ambientLight);
+        
+        const dirLight = new THREE.DirectionalLight(0xffffff, 3.0);
+        dirLight.position.set(5, 3, 2);
+        scene.add(dirLight);
         const pointLight = new THREE.PointLight(0x00e5ff, 2);
         pointLight.position.set(5, 5, 5);
         scene.add(pointLight);
@@ -331,7 +336,7 @@
         // World Globe
         const textureLoader = new THREE.TextureLoader();
         // Using a dark/night earth texture to fit the theme
-        const earthTexture = textureLoader.load('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg');
+        const earthTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
         
         const globeGeometry = new THREE.SphereGeometry(4, 64, 64);
         const globeMaterial = new THREE.MeshStandardMaterial({
@@ -339,7 +344,7 @@
             roughness: 0.4,
             metalness: 0.1,
             transparent: true,
-            opacity: 0.9
+            opacity: 1.0
         });
 
         // We keep the variable name "globeParticles" so the GSAP scroll animations below still work perfectly
@@ -362,7 +367,19 @@
         const starField = new THREE.Points(starGeometry, starMaterial);
         scene.add(starField);
 
+
+        // Astronaut
+        let astronaut;
+        const gltfLoader = new THREE.GLTFLoader();
+        gltfLoader.load('https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/Astronaut.glb', (gltf) => {
+            astronaut = gltf.scene;
+            astronaut.scale.set(0.6, 0.6, 0.6);
+            astronaut.position.set(-3, 0, -1);
+            scene.add(astronaut);
+        });
+
         // Comets and Shooting Stars
+
         const comets = [];
         for (let i = 0; i < 30; i++) {
             const length = Math.random() * 2 + 1;
@@ -481,6 +498,15 @@
             });
             
             starField.rotation.y += 0.0005;
+
+
+            if (astronaut) {
+                const time = Date.now() * 0.001;
+                astronaut.position.y = Math.sin(time) * 0.5;
+                astronaut.position.x = -3.5 + Math.cos(time * 0.5) * 0.5;
+                astronaut.rotation.y += 0.002;
+                astronaut.rotation.z = Math.sin(time * 0.5) * 0.1;
+            }
 
             comets.forEach((comet) => {
                 comet.position.add(comet.userData.velocity);
