@@ -44,7 +44,7 @@ export default function GlobeBackground() {
       renderer.outputEncoding = 3001; // Legacy sRGBEncoding
     }
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.3; // Boost brightness and contrast
+    renderer.toneMappingExposure = 2.2; // Huge boost to brightness and contrast
     
     while (containerRef.current.firstChild) {
       containerRef.current.removeChild(containerRef.current.firstChild);
@@ -113,21 +113,21 @@ export default function GlobeBackground() {
     earthGroup.add(atmosMesh);
 
     // LIGHTS
-    // Very dim ambient light so the night side of Earth looks completely dark, increasing contrast
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.03); 
+    // Moderate ambient light so the night side of Earth isn't totally black
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); 
     scene.add(ambientLight);
     
     // Strong primary sun light
-    const sunLight = new THREE.DirectionalLight(0xffeedd, 3.5); // Slightly warm sun
+    const sunLight = new THREE.DirectionalLight(0xffeedd, 5.0); // Very warm and bright sun
     sunLight.position.set(5, 3, 5);
     scene.add(sunLight);
     
-    // Subtle blue rim light to outline the dark side slightly
-    const backLight = new THREE.PointLight(0x00aaff, 1.5, 50);
+    // Strong blue rim light to outline the dark side brightly
+    const backLight = new THREE.PointLight(0x00aaff, 3.5, 50);
     backLight.position.set(-6, -2, -6);
     scene.add(backLight);
 
-    camera.position.z = 6.2;
+    camera.position.z = 3.8; // Move camera much closer to make the globe massive and central
 
     // ANIMATION LOOP
     let animationId;

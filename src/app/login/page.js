@@ -308,7 +308,7 @@ const styles = {
   overlay: {
     position: 'absolute',
     top: 0, left: 0, width: '100%', height: '100%',
-    backgroundColor: 'rgba(11, 16, 30, 0.3)',
+    backgroundColor: 'rgba(11, 16, 30, 0.05)', // Very light overlay so globe is highly visible
     zIndex: 1,
   },
   card: {
