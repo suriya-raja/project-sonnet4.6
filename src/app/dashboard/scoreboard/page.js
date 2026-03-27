@@ -4,28 +4,14 @@ import { useState, useEffect, useCallback } from 'react';
 import Navbar from '@/components/Navbar';
 import AuthGuard from '@/components/AuthGuard';
 import Podium3D from '@/components/Podium3D';
-import { INDIAN_CITIES } from '@/lib/cities';
 
 export default function ScoreboardPage() {
   const [scoreboard, setScoreboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [city, setCity] = useState('');
-  const [noService, setNoService] = useState(false);
-  const [detectedName, setDetectedName] = useState('');
   const [locationError, setLocationError] = useState('');
   const [userRank, setUserRank] = useState(null);
   const [userId, setUserId] = useState(null);
-
-  const matchCity = (detected) => {
-    if (!detected) return null;
-    const lower = detected.toLowerCase().trim();
-    const exact = INDIAN_CITIES.find(c => c.toLowerCase() === lower);
-    if (exact) return exact;
-    const partial = INDIAN_CITIES.find(c =>
-      lower.includes(c.toLowerCase()) || c.toLowerCase().includes(lower)
-    );
-    return partial || null;
-  };
 
   const reverseGeocode = useCallback(async (lat, lng) => {
     try {
@@ -36,26 +22,21 @@ export default function ScoreboardPage() {
       const data = await res.json();
 
       if (data?.address) {
-        const name =
+        const detectedCity =
           data.address.city ||
           data.address.town ||
           data.address.state_district ||
           data.address.county ||
+          data.address.village ||
           data.address.state;
 
-        setDetectedName(name || 'Unknown');
-
-        const matched = matchCity(name);
-        if (matched) {
-          setCity(matched);
-          setNoService(false);
-          return matched;
-        } else {
-          setNoService(true);
-          setLoading(false);
-          return null;
+        if (detectedCity) {
+          setCity(detectedCity);
+          return detectedCity;
         }
       }
+      setLocationError('Could not determine your city from GPS.');
+      setLoading(false);
     } catch (err) {
       console.error('Reverse geocode error:', err);
       setLocationError('Failed to detect your location. Please try again.');
@@ -127,71 +108,25 @@ export default function ScoreboardPage() {
           )}
         </div>
 
-        {/* Location error */}
         {locationError && (
           <div className="alert alert-error animate-scale-in" style={{ marginBottom: 'var(--space-xl)', textAlign: 'center' }}>
             ⚠️ {locationError}
           </div>
         )}
 
-        {/* No service in this city */}
-        {noService && (
-          <div className="glass-card animate-scale-in" style={{
-            padding: 'var(--space-3xl)',
-            textAlign: 'center',
-            marginBottom: 'var(--space-xl)',
-          }}>
-            <div style={{ fontSize: '4rem', marginBottom: 'var(--space-lg)' }}>🚫</div>
-            <h2 style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: '1.5rem',
-              fontWeight: 700,
-              marginBottom: 'var(--space-md)',
-              color: 'var(--accent-amber)',
-            }}>
-              No Service in {detectedName}
-            </h2>
-            <p style={{
-              color: 'var(--text-secondary)',
-              fontSize: '1rem',
-              maxWidth: '400px',
-              margin: '0 auto',
-              lineHeight: 1.7,
-            }}>
-              NOGIRR is not yet available in <strong style={{ color: 'var(--text-primary)' }}>{detectedName}</strong>.
-              We currently serve {INDIAN_CITIES.length} major Indian cities. We&apos;re expanding soon!
-            </p>
-            <div style={{
-              marginTop: 'var(--space-xl)',
-              padding: 'var(--space-md)',
-              background: 'var(--bg-glass)',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--border-subtle)',
-            }}>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                📍 Your detected location: <strong style={{ color: 'var(--text-secondary)' }}>{detectedName}</strong>
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Loading */}
-        {loading && !noService && !locationError && (
+        {loading && !locationError && (
           <div className="loading-page">
             <div className="loading-spinner"></div>
             <p style={{ color: 'var(--text-secondary)' }}>📍 Detecting your location...</p>
           </div>
         )}
 
-        {/* Scoreboard content - only show when city is detected and in our list */}
-        {!loading && !noService && !locationError && city && (
+        {!loading && !locationError && city && (
           <>
-            {/* Location badge */}
             <div className="alert alert-success animate-fade-in-up" style={{ marginBottom: 'var(--space-xl)', textAlign: 'center' }}>
-              📍 You&apos;re currently in <strong>{city}</strong> — showing local scoreboard
+              📍 You&apos;re currently in <strong>{city}</strong>
             </div>
 
-            {/* Your rank card */}
             {userRank && (
               <div className="glass-card animate-scale-in" style={{
                 padding: 'var(--space-lg)',
@@ -199,14 +134,10 @@ export default function ScoreboardPage() {
                 marginBottom: 'var(--space-xl)',
                 borderColor: 'rgba(245, 158, 11, 0.3)',
               }}>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-                  Your Rank
-                </div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Your Rank</div>
                 <div style={{
-                  fontSize: '2.5rem',
-                  fontFamily: 'var(--font-heading)',
-                  fontWeight: 900,
-                  color: 'var(--accent-amber)',
+                  fontSize: '2.5rem', fontFamily: 'var(--font-heading)',
+                  fontWeight: 900, color: 'var(--accent-amber)',
                 }}>
                   #{userRank.rank}
                 </div>
@@ -230,29 +161,20 @@ export default function ScoreboardPage() {
                 {restOfList.length > 0 && (
                   <div style={{ marginTop: 'var(--space-xl)' }}>
                     <h2 style={{
-                      fontFamily: 'var(--font-heading)',
-                      fontSize: '1.2rem',
-                      fontWeight: 600,
-                      marginBottom: 'var(--space-md)',
-                      color: 'var(--text-secondary)',
+                      fontFamily: 'var(--font-heading)', fontSize: '1.2rem',
+                      fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--text-secondary)',
                     }}>
                       Full Leaderboard
                     </h2>
                     <div className="leaderboard-list">
                       {restOfList.map((donor, idx) => (
-                        <div
-                          key={donor.id}
-                          className="leaderboard-item"
-                          style={{ animationDelay: `${idx * 0.05}s` }}
-                        >
+                        <div key={donor.id} className="leaderboard-item" style={{ animationDelay: `${idx * 0.05}s` }}>
                           <div className="leaderboard-rank">{donor.rank}</div>
                           <div className="leaderboard-info">
                             <div className="leaderboard-name">
                               {donor.name}
                               {donor.is_ngo && (
-                                <span className="food-card-badge badge-ngo" style={{ marginLeft: '8px', fontSize: '0.7rem' }}>
-                                  NGO
-                                </span>
+                                <span className="food-card-badge badge-ngo" style={{ marginLeft: '8px', fontSize: '0.7rem' }}>NGO</span>
                               )}
                             </div>
                             <div className="leaderboard-stats">
@@ -267,9 +189,7 @@ export default function ScoreboardPage() {
                 )}
 
                 <div className="glass-card" style={{
-                  padding: 'var(--space-lg)',
-                  textAlign: 'center',
-                  marginTop: 'var(--space-xl)',
+                  padding: 'var(--space-lg)', textAlign: 'center', marginTop: 'var(--space-xl)',
                 }}>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                     Showing top {scoreboard.length} donor{scoreboard.length !== 1 ? 's' : ''} in {city}

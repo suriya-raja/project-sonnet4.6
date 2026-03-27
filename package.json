@@ -18,5 +18,8 @@
     "react-dom": "^19.2.4",
     "react-leaflet": "^5.0.0",
     "three": "^0.183.2"
+  },
+  "devDependencies": {
+    "vercel": "^50.37.1"
   }
 }
