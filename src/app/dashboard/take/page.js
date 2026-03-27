@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
+import ThreeBackground from '@/components/ThreeBackground';
 import AuthGuard from '@/components/AuthGuard';
 
 // Dynamic import MapView to avoid SSR issues with Leaflet
@@ -95,6 +96,7 @@ export default function TakeFoodPage() {
 
   return (
     <AuthGuard>
+      <ThreeBackground />
       <Navbar />
       <div className="page-container">
         <div className="page-header animate-fade-in-up">

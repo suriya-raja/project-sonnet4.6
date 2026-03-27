@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
+import ThreeBackground from '@/components/ThreeBackground';
 import AuthGuard from '@/components/AuthGuard';
 
 const MapView = dynamic(() => import('@/components/MapView'), {
@@ -154,6 +155,7 @@ export default function GiveFoodPage() {
   if (posted && postedListing) {
     return (
       <AuthGuard>
+      <ThreeBackground />
         <Navbar />
         <div className="page-container">
           {/* Success banner */}
@@ -278,6 +280,7 @@ export default function GiveFoodPage() {
   // ============ DONATION FORM VIEW ============
   return (
     <AuthGuard>
+      <ThreeBackground />
       <Navbar />
       <div className="page-container" style={{ maxWidth: '600px' }}>
         <div className="page-header animate-fade-in-up">

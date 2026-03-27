@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Navbar from '@/components/Navbar';
+import ThreeBackground from '@/components/ThreeBackground';
 import AuthGuard from '@/components/AuthGuard';
 import Podium3D from '@/components/Podium3D';
 
@@ -95,6 +96,7 @@ export default function ScoreboardPage() {
 
   return (
     <AuthGuard>
+      <ThreeBackground />
       <Navbar />
       <div className="page-container" style={{ maxWidth: '800px' }}>
         <div className="page-header animate-fade-in-up" style={{ textAlign: 'center' }}>
