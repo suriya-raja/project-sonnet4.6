@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import GlobeBackground from '@/components/GlobeBackground';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,7 +21,6 @@ export default function RegisterPage() {
   const [detectingCity, setDetectingCity] = useState(false);
   const [cityDetected, setCityDetected] = useState(false);
 
-  // Auto-detect city from GPS on page load
   useEffect(() => {
     if (navigator.geolocation) {
       setDetectingCity(true);
@@ -117,9 +117,13 @@ export default function RegisterPage() {
 
   return (
     <div style={styles.container}>
+      <GlobeBackground />
       <div style={styles.overlay}></div>
       
-      <div style={{ ...styles.card, padding: '30px', margin: '20px' }}>
+      <div style={styles.card}>
+        <div style={styles.logoContainer}>
+          <div style={styles.logoText}>NOGIRR</div>
+        </div>
         <h1 style={styles.title}>Create Account</h1>
         
         {error && <div style={styles.errorBanner}>⚠️ {error}</div>}
@@ -186,9 +190,20 @@ export default function RegisterPage() {
                 📍
               </span>
             )}
+            {detectingCity && (
+              <div className="loading-spinner" style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: '18px',
+                height: '18px',
+                margin: 0,
+              }} />
+            )}
           </div>
           {cityDetected && (
-            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', marginTop: '-10px', alignSelf: 'flex-start', paddingLeft: '10px' }}>
+            <span style={{ fontSize: '0.75rem', color: '#00d2ff', marginTop: '-10px', alignSelf: 'flex-start', paddingLeft: '10px' }}>
               ✅ Auto-detected from location
             </span>
           )}
@@ -200,12 +215,13 @@ export default function RegisterPage() {
               onClick={handleToggleNgo}
               style={{
                 width: '40px', height: '22px', borderRadius: '15px',
-                background: formData.is_ngo ? '#1dfc6a' : 'rgba(255,255,255,0.3)',
-                position: 'relative', cursor: 'pointer', transition: '0.3s'
+                background: formData.is_ngo ? '#00d2ff' : 'rgba(255,255,255,0.3)',
+                position: 'relative', cursor: 'pointer', transition: '0.3s',
+                boxShadow: formData.is_ngo ? '0 0 10px rgba(0, 210, 255, 0.4)' : 'none'
               }}
             >
               <div style={{
-                width: '18px', height: '18px', borderRadius: '50%', background: '#fff',
+                width: '18px', height: '18px', borderRadius: '50%', background: formData.is_ngo ? '#0b101e' : '#fff',
                 position: 'absolute', top: '2px', left: formData.is_ngo ? '20px' : '2px', transition: '0.3s'
               }} />
             </div>
@@ -232,7 +248,7 @@ export default function RegisterPage() {
         </form>
 
         <div style={{ marginTop: '20px' }}>
-          <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem' }}>
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
             Already have an account?{' '}
           </span>
           <Link href="/login" style={styles.link}>Sign In</Link>
@@ -248,16 +264,15 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundImage: 'url("https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=2560&auto=format&fit=crop")',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundColor: '#0b101e',
     fontFamily: 'var(--font-heading), sans-serif',
     position: 'relative',
+    overflow: 'hidden'
   },
   overlay: {
     position: 'absolute',
     top: 0, left: 0, width: '100%', height: '100%',
-    backgroundColor: 'rgba(20, 10, 30, 0.4)',
+    backgroundColor: 'rgba(11, 16, 30, 0.3)',
     zIndex: 1,
   },
   card: {
@@ -265,21 +280,34 @@ const styles = {
     zIndex: 2,
     width: '100%',
     maxWidth: '430px',
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    backdropFilter: 'blur(16px)',
-    WebkitBackdropFilter: 'blur(16px)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(20, 25, 40, 0.4)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: '1px solid rgba(0, 210, 255, 0.2)', // Wave blue subtle border
     borderRadius: '24px',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+    padding: '30px 40px 40px',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 210, 255, 0.05)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    margin: '30px 0'
+  },
+  logoContainer: {
+    marginBottom: '15px'
+  },
+  logoText: {
+    fontFamily: 'var(--font-heading)',
+    fontSize: '2rem',
+    fontWeight: 900,
+    color: '#00d2ff', // Wave blue
+    letterSpacing: '-1px',
+    textShadow: '0 0 10px rgba(0, 210, 255, 0.4)'
   },
   title: {
     color: '#ffffff',
-    fontSize: '1.8rem',
+    fontSize: '1.5rem',
     fontWeight: 500,
-    marginBottom: '25px',
+    marginBottom: '20px',
     letterSpacing: '0.5px',
   },
   form: {
@@ -292,9 +320,9 @@ const styles = {
   input: {
     width: '100%',
     padding: '14px 20px',
-    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     border: '1px solid rgba(255, 255, 255, 0.1)',
-    borderRadius: '30px',
+    borderRadius: '8px',
     color: '#ffffff',
     fontSize: '0.95rem',
     outline: 'none',
@@ -303,23 +331,25 @@ const styles = {
   submitBtn: {
     width: '100%',
     padding: '15px',
-    backgroundColor: 'rgba(115, 30, 55, 0.9)',
-    color: '#ffffff',
+    backgroundColor: '#00d2ff', // Wave blue button
+    color: '#0b101e', // Dark text
     border: 'none',
-    borderRadius: '30px',
+    borderRadius: '8px',
     fontSize: '1rem',
-    fontWeight: 600,
+    fontWeight: 700,
     cursor: 'pointer',
     marginTop: '15px',
-    transition: 'background-color 0.2s',
+    transition: 'transform 0.2s, box-shadow 0.2s',
     letterSpacing: '0.5px',
+    boxShadow: '0 0 15px rgba(0, 210, 255, 0.3)',
   },
   link: {
-    color: '#ffffff',
+    color: '#00d2ff', // Wave blue link
     fontSize: '0.85rem',
-    textDecoration: 'underline',
+    textDecoration: 'none',
     cursor: 'pointer',
     opacity: 0.9,
+    transition: 'opacity 0.2s',
   },
   errorBanner: {
     width: '100%',

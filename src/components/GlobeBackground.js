@@ -41,7 +41,7 @@ export default function GlobeBackground() {
     // Wireframe overlay to look like holographic earth geometry
     const wireframeGeometry = new THREE.SphereGeometry(radius + 0.02, 32, 32);
     const wireframeMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00ff88,
+      color: 0x0088ff, // Wave blue
       wireframe: true,
       transparent: true,
       opacity: 0.15
@@ -67,7 +67,7 @@ export default function GlobeBackground() {
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     const particlesMaterial = new THREE.PointsMaterial({
       size: 0.03,
-      color: 0x00ff88,
+      color: 0x0088ff, // Wave blue
       transparent: true,
       opacity: 0.6,
       blending: THREE.AdditiveBlending
@@ -75,26 +75,25 @@ export default function GlobeBackground() {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     globe.add(particlesMesh);
 
-    // FLOATING GEOMETRY (Octahedrons, like in the image)
+    // FLOATING GEOMETRY
     const floatingShapes = new THREE.Group();
     scene.add(floatingShapes);
     
     for (let i = 0; i < 15; i++) {
       const geo = new THREE.OctahedronGeometry(Math.random() * 0.2 + 0.05);
       const mat = new THREE.MeshBasicMaterial({
-        color: 0x00ffcc,
+        color: 0x00bbff, // Lighter wave blue
         wireframe: true,
         transparent: true,
         opacity: 0.4
       });
       const shape = new THREE.Mesh(geo, mat);
       
-      // Position randomly around the globe
+      // Position randomly
       shape.position.x = (Math.random() - 0.5) * 12;
       shape.position.y = (Math.random() - 0.5) * 10;
       shape.position.z = (Math.random() - 0.5) * 5 - 2;
       
-      // Rotation speed
       shape.userData = {
         rx: Math.random() * 0.02,
         ry: Math.random() * 0.02,
@@ -108,11 +107,11 @@ export default function GlobeBackground() {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     scene.add(ambientLight);
     
-    const pointLight = new THREE.PointLight(0x00ff88, 2, 50);
+    const pointLight = new THREE.PointLight(0x0088ff, 2, 50); // Wave blue light
     pointLight.position.set(5, 3, 5);
     scene.add(pointLight);
 
-    const backLight = new THREE.PointLight(0x00aaff, 1.5, 50);
+    const backLight = new THREE.PointLight(0x0044ff, 1.5, 50); // Deep wave blue
     backLight.position.set(-5, -3, -5);
     scene.add(backLight);
 
@@ -121,8 +120,8 @@ export default function GlobeBackground() {
     // ANIMATION LOOP
     let animationId;
     const animate = () => {
-      globe.rotation.y += 0.001; // Slow rotation
-      globe.rotation.x = 0.2; // Slight tilt
+      globe.rotation.y += 0.001; 
+      globe.rotation.x = 0.2; 
       
       floatingShapes.children.forEach(shape => {
         shape.rotation.x += shape.userData.rx;
@@ -135,7 +134,7 @@ export default function GlobeBackground() {
     };
     animate();
 
-    // RESIZE HANDLER
+    // RESIZE
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();

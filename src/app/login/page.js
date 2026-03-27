@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useGoogleLogin } from '@react-oauth/google';
+import GlobeBackground from '@/components/GlobeBackground';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -63,36 +64,15 @@ export default function LoginPage() {
         setLoading(true);
         setError('');
         
-        // Pass the credential to our backend
-        const res = await fetch('/api/auth/google', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ credential: tokenResponse.access_token || tokenResponse.credential }),
-        });
-        
-        // Note: useGoogleLogin implicit flow returns access_token. 
-        // If we want Google ID token (which our backend expects via tokeninfo endpoint),
-        // we should decode the access_token or fetch user info. Wait, the `tokeninfo` endpoint
-        // can also verify access_token! Let's pass it.
-        // Actually, to get an id_token we need to use the credential flow or fetch Google's userinfo endpoint.
-        
-        // Because @react-oauth/google's custom button returns an access_token, we must fetch the user info from Google first,
-        // then send the email/id to our backend.
-        
         const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
         const googleUser = await userInfoRes.json();
         
-        // Now send the raw google profile to our custom backend endpoint. 
-        // We'll quickly adapt the backend payload format.
-        
         const authRes = await fetch('/api/auth/google', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ payload: googleUser }), 
-          // We must update the API route to accept `payload` instead of `credential` if we do it this way,
-          // OR we use GoogleLogin component which returns credential directly.
         });
         
         const data = await authRes.json();
@@ -170,7 +150,6 @@ export default function LoginPage() {
       
       setSuccess('Password reset successfully! You can now login.');
       setViewMode('login');
-      // Clear password field but keep email
       setFormData({ ...formData, email: resetData.email, password: '' });
       setResetData({ email: '', otp: '', newPassword: '' });
     } catch (err) {
@@ -219,7 +198,6 @@ export default function LoginPage() {
       
       <div style={styles.socialRow}>
         <button type="button" onClick={() => googleLogin()} style={styles.socialBtn}>
-          {/* Custom Google G SVG */}
           <svg style={{ width: '22px', height: '22px' }} viewBox="0 0 24 24">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -228,7 +206,6 @@ export default function LoginPage() {
           </svg>
         </button>
         <button type="button" onClick={() => alert('Facebook login coming soon!')} style={styles.socialBtn}>
-          {/* Custom Facebook f SVG */}
           <svg style={{ width: '22px', height: '22px' }} viewBox="0 0 24 24" fill="#1877F2">
             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
           </svg>
@@ -293,12 +270,15 @@ export default function LoginPage() {
 
   return (
     <div style={styles.container}>
-      {/* Background Overlay to ensure readability */}
+      <GlobeBackground />
       <div style={styles.overlay}></div>
       
       <div style={styles.card}>
+        <div style={styles.logoContainer}>
+          <div style={styles.logoText}>NOGIRR</div>
+        </div>
         <h1 style={styles.title}>
-          {viewMode === 'login' && 'Welcome'}
+          {viewMode === 'login' && 'Welcome Back'}
           {viewMode === 'forgot' && 'Reset Password'}
           {viewMode === 'reset' && 'Create New Password'}
         </h1>
@@ -320,17 +300,15 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    // High-quality unsplash mountain image matching the design reference
-    backgroundImage: 'url("https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=2560&auto=format&fit=crop")', 
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundColor: '#0b101e',
     fontFamily: 'var(--font-heading), sans-serif',
     position: 'relative',
+    overflow: 'hidden'
   },
   overlay: {
     position: 'absolute',
     top: 0, left: 0, width: '100%', height: '100%',
-    backgroundColor: 'rgba(20, 10, 30, 0.4)', // Slightly dark magenta/purple hue overlay
+    backgroundColor: 'rgba(11, 16, 30, 0.3)',
     zIndex: 1,
   },
   card: {
@@ -338,20 +316,31 @@ const styles = {
     zIndex: 2,
     width: '100%',
     maxWidth: '430px',
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    backdropFilter: 'blur(16px)',
-    WebkitBackdropFilter: 'blur(16px)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(20, 25, 40, 0.4)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: '1px solid rgba(0, 210, 255, 0.2)', // Wave blue subtle border
     borderRadius: '24px',
     padding: '40px',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 210, 255, 0.05)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
+  logoContainer: {
+    marginBottom: '20px'
+  },
+  logoText: {
+    fontFamily: 'var(--font-heading)',
+    fontSize: '2rem',
+    fontWeight: 900,
+    color: '#00d2ff', // Wave blue
+    letterSpacing: '-1px',
+    textShadow: '0 0 10px rgba(0, 210, 255, 0.4)'
+  },
   title: {
     color: '#ffffff',
-    fontSize: '1.8rem',
+    fontSize: '1.5rem',
     fontWeight: 500,
     marginBottom: '30px',
     letterSpacing: '0.5px',
@@ -372,9 +361,9 @@ const styles = {
   input: {
     width: '100%',
     padding: '16px 20px',
-    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     border: '1px solid rgba(255, 255, 255, 0.1)',
-    borderRadius: '30px',
+    borderRadius: '8px',
     color: '#ffffff',
     fontSize: '0.95rem',
     outline: 'none',
@@ -383,40 +372,41 @@ const styles = {
   submitBtn: {
     width: '100%',
     padding: '15px',
-    backgroundColor: 'rgba(115, 30, 55, 0.9)', // Deep burgundy as in image 2
-    color: '#ffffff',
+    backgroundColor: '#00d2ff', // Wave blue button
+    color: '#0b101e', // Dark text
     border: 'none',
-    borderRadius: '30px',
+    borderRadius: '8px',
     fontSize: '1rem',
-    fontWeight: 600,
+    fontWeight: 700,
     cursor: 'pointer',
     marginTop: '10px',
-    transition: 'background-color 0.2s',
+    transition: 'transform 0.2s, box-shadow 0.2s',
     letterSpacing: '0.5px',
+    boxShadow: '0 0 15px rgba(0, 210, 255, 0.3)',
   },
   linksRow: {
     display: 'flex',
     justifyContent: 'space-between',
     width: '100%',
     marginTop: '10px',
-    padding: '0 10px',
+    padding: '0 5px',
   },
   link: {
-    color: '#ffffff',
+    color: '#00d2ff',
     fontSize: '0.85rem',
     textDecoration: 'none',
     cursor: 'pointer',
-    opacity: 0.8,
+    opacity: 0.9,
     transition: 'opacity 0.2s',
   },
   divider: {
     height: '1px',
-    background: 'rgba(255, 255, 255, 0.15)',
+    background: 'rgba(255, 255, 255, 0.1)',
     width: '100%',
     margin: '30px 0 20px',
   },
   orLoginText: {
-    color: '#ffffff',
+    color: 'rgba(255,255,255,0.5)',
     fontSize: '0.75rem',
     fontWeight: 600,
     textAlign: 'center',
