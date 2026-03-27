@@ -379,7 +379,7 @@
                 (Math.random() - 0.5) * 50,
                 (Math.random() - 0.5) * 30 - 10
             );
-            const speed = Math.random() * 0.3 + 0.1;
+            const speed = Math.random() * 0.03 + 0.01;
             comet.userData.velocity = new THREE.Vector3(speed, -speed, Math.random() * speed);
             const targetPos = comet.position.clone().add(comet.userData.velocity);
             comet.lookAt(targetPos);
