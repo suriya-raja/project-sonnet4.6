@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Navbar from '@/components/Navbar';
+import ThreeBackground from '@/components/ThreeBackground';
 import AuthGuard from '@/components/AuthGuard';
 import OrderStatus from '@/components/OrderStatus';
 
@@ -378,6 +379,7 @@ export default function OrdersPage() {
 
   return (
     <AuthGuard>
+      <ThreeBackground />
       <Navbar />
       <div className="page-container" style={{ maxWidth: '800px' }}>
         <div className="page-header animate-fade-in-up">

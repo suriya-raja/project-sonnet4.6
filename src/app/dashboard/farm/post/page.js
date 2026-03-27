@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
+import ThreeBackground from '@/components/ThreeBackground';
 import AuthGuard from '@/components/AuthGuard';
 
 const FarmMap = dynamic(() => import('@/components/FarmMap'), {
@@ -199,6 +200,7 @@ export default function PostFarmProducePage() {
   if (posted && postedListing) {
     return (
       <AuthGuard>
+      <ThreeBackground />
         <Navbar />
         <div className="page-container">
           <div className="alert alert-success animate-scale-in" style={{
@@ -312,6 +314,7 @@ export default function PostFarmProducePage() {
   // ============ POSTING FORM VIEW ============
   return (
     <AuthGuard>
+      <ThreeBackground />
       <Navbar />
       <div className="page-container" style={{ maxWidth: '650px' }}>
         <div className="page-header animate-fade-in-up">

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
+import ThreeBackground from '@/components/ThreeBackground';
 import AuthGuard from '@/components/AuthGuard';
 
 const FarmMap = dynamic(() => import('@/components/FarmMap'), {
@@ -103,6 +104,7 @@ export default function FarmPage() {
 
   return (
     <AuthGuard>
+      <ThreeBackground />
       <Navbar />
       <div className="page-container">
         <div className="page-header animate-fade-in-up" style={{ textAlign: 'center' }}>
