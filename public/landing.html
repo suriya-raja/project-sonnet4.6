@@ -368,12 +368,19 @@
         scene.add(starField);
 
 
-        // Astronaut
+        // Farmer Hologram
         let astronaut;
-        const gltfLoader = new THREE.GLTFLoader();
-        gltfLoader.load('https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/Astronaut.glb', (gltf) => {
-            astronaut = gltf.scene;
-            astronaut.scale.set(1.5, 1.5, 1.5);
+        const texLoader2 = new THREE.TextureLoader();
+        texLoader2.load('/farmer.png', (texture) => {
+            const material = new THREE.SpriteMaterial({ 
+                map: texture, 
+                color: 0xccffff, // slight tint for hologram effect
+                blending: THREE.AdditiveBlending, // makes black completely invisible!
+                transparent: true,
+                opacity: 0.9
+            });
+            astronaut = new THREE.Sprite(material);
+            astronaut.scale.set(6.0, 6.0, 1); // Large glowing farmer
             astronaut.position.set(-3, 0, -1);
             scene.add(astronaut);
         });
@@ -489,9 +496,8 @@
                 astronaut.position.x = Math.sin(time * 0.2) * 8; // Float wide left and right
                 astronaut.position.y = Math.cos(time * 0.15) * 5; // Float high and low
                 astronaut.position.z = Math.sin(time * 0.3) * 3 - 2; // Move smoothly back and front
-                astronaut.rotation.x = Math.sin(time * 0.2) * 0.5;
-                astronaut.rotation.y += 0.003;
-                astronaut.rotation.z = Math.cos(time * 0.2) * 0.5;
+                // Sprite material rotation since normal rotation rules don't apply
+                astronaut.material.rotation = Math.sin(time * 0.3) * 0.1;
             }
 
             
