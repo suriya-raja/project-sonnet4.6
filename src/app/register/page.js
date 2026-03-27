@@ -73,7 +73,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.city) {
-      setError('Please fill in all required fields. City is auto-detected — allow location access.');
+      setError('Please fill in all required fields.');
       setLoading(false);
       return;
     }
@@ -116,183 +116,219 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card glass-card">
-        <div className="auth-logo">
-          <div className="auth-logo-text">NOGIRR</div>
-        </div>
+    <div style={styles.container}>
+      <div style={styles.overlay}></div>
+      
+      <div style={{ ...styles.card, padding: '30px', margin: '20px' }}>
+        <h1 style={styles.title}>Create Account</h1>
+        
+        {error && <div style={styles.errorBanner}>⚠️ {error}</div>}
 
-        <h1 className="auth-title">Create Account</h1>
-        <p className="auth-subtitle">Join the food sharing community</p>
+        <form style={styles.form} onSubmit={handleSubmit}>
+          <input
+            style={styles.input}
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
 
-        {error && <div className="auth-error">⚠️ {error}</div>}
+          <input
+            style={styles.input}
+            type="email"
+            name="email"
+            placeholder="Email (you@example.com)"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label" htmlFor="register-name">Full Name</label>
-            <input
-              id="register-name"
-              className="form-input"
-              type="text"
-              name="name"
-              placeholder="Enter your full name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <input
+            style={styles.input}
+            type="tel"
+            name="phone"
+            placeholder="Phone (+91 XXXXX XXXXX)"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+          />
 
-          <div className="form-group">
-            <label className="form-label" htmlFor="register-email">Email</label>
-            <input
-              id="register-email"
-              className="form-input"
-              type="email"
-              name="email"
-              placeholder="you@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="register-phone">Phone Number</label>
-            <input
-              id="register-phone"
-              className="form-input"
-              type="tel"
-              name="phone"
-              placeholder="+91 XXXXX XXXXX"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="register-password">Password</label>
-            <input
-              id="register-password"
-              className="form-input"
-              type="password"
-              name="password"
-              placeholder="Min 6 characters"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              minLength={6}
-            />
-          </div>
+          <input
+            style={styles.input}
+            type="password"
+            name="password"
+            placeholder="Password (Min 6 characters)"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            minLength={6}
+          />
 
           {/* Auto-detected city */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="register-city">
-              City {detectingCity && '— detecting...'}
-            </label>
-            <div style={{ position: 'relative' }}>
-              <input
-                id="register-city"
-                className="form-input"
-                type="text"
-                name="city"
-                placeholder={detectingCity ? 'Detecting your city via GPS...' : 'Your city (auto-detected)'}
-                value={formData.city}
-                onChange={handleChange}
-                required
-                readOnly={detectingCity}
-                style={{
-                  paddingLeft: cityDetected ? '36px' : '16px',
-                }}
-              />
-              {cityDetected && (
-                <span style={{
-                  position: 'absolute',
-                  left: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  fontSize: '1rem',
-                }}>📍</span>
-              )}
-              {detectingCity && (
-                <div className="loading-spinner" style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  width: '18px',
-                  height: '18px',
-                  margin: 0,
-                }} />
-              )}
-            </div>
+          <div style={{ position: 'relative', width: '100%' }}>
+            <input
+              style={{
+                ...styles.input,
+                paddingLeft: cityDetected || detectingCity ? '36px' : '20px'
+              }}
+              type="text"
+              name="city"
+              placeholder={detectingCity ? 'Detecting your city via GPS...' : 'Your city (auto-detected)'}
+              value={formData.city}
+              onChange={handleChange}
+              required
+              readOnly={detectingCity}
+            />
             {cityDetected && (
-              <span style={{ fontSize: '0.75rem', color: 'var(--accent-emerald)', marginTop: '4px' }}>
-                ✅ Auto-detected from your location
-              </span>
-            )}
-            {!detectingCity && !cityDetected && (
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                Allow location access for auto-detection, or type manually
+              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '1rem' }}>
+                📍
               </span>
             )}
           </div>
+          {cityDetected && (
+            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', marginTop: '-10px', alignSelf: 'flex-start', paddingLeft: '10px' }}>
+              ✅ Auto-detected from location
+            </span>
+          )}
 
           {/* NGO Toggle */}
-          <div className="form-group">
-            <div className="toggle-container">
-              <div
-                className={`toggle ${formData.is_ngo ? 'active' : ''}`}
-                onClick={handleToggleNgo}
-                role="switch"
-                aria-checked={formData.is_ngo}
-                tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && handleToggleNgo()}
-              >
-                <div className="toggle-knob" />
-              </div>
-              <span className="form-label" style={{ margin: 0 }}>
-                Are you an NGO? {formData.is_ngo ? '🏢' : ''}
-              </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', alignSelf: 'flex-start', marginLeft: '10px', marginTop: '10px' }}>
+            <div
+              className={`toggle ${formData.is_ngo ? 'active' : ''}`}
+              onClick={handleToggleNgo}
+              style={{
+                width: '40px', height: '22px', borderRadius: '15px',
+                background: formData.is_ngo ? '#1dfc6a' : 'rgba(255,255,255,0.3)',
+                position: 'relative', cursor: 'pointer', transition: '0.3s'
+              }}
+            >
+              <div style={{
+                width: '18px', height: '18px', borderRadius: '50%', background: '#fff',
+                position: 'absolute', top: '2px', left: formData.is_ngo ? '20px' : '2px', transition: '0.3s'
+              }} />
             </div>
+            <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>
+              Are you an NGO? {formData.is_ngo ? '🏢' : ''}
+            </span>
           </div>
 
           {formData.is_ngo && (
-            <div className="form-group animate-fade-in-up" style={{ animationDuration: '0.3s' }}>
-              <label className="form-label" htmlFor="register-ngo-name">NGO Name</label>
-              <input
-                id="register-ngo-name"
-                className="form-input"
-                type="text"
-                name="ngo_name"
-                placeholder="Enter your NGO name"
-                value={formData.ngo_name}
-                onChange={handleChange}
-                required={formData.is_ngo}
-              />
-            </div>
+            <input
+              style={{ ...styles.input, marginTop: '10px' }}
+              type="text"
+              name="ngo_name"
+              placeholder="Enter your NGO name"
+              value={formData.ngo_name}
+              onChange={handleChange}
+              required={formData.is_ngo}
+            />
           )}
 
-          <button
-            type="submit"
-            className="btn btn-primary btn-lg btn-full"
-            disabled={loading || detectingCity}
-          >
-            {loading ? (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div className="loading-spinner" style={{ width: '20px', height: '20px', margin: 0 }} />
-                Creating Account...
-              </span>
-            ) : (
-              '🚀 Create Account'
-            )}
+          <button style={styles.submitBtn} type="submit" disabled={loading || detectingCity}>
+            {loading ? 'CREATING...' : 'CREATE ACCOUNT'}
           </button>
         </form>
 
-        <div className="auth-footer">
-          Already have an account? <Link href="/login">Sign In</Link>
+        <div style={{ marginTop: '20px' }}>
+          <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem' }}>
+            Already have an account?{' '}
+          </span>
+          <Link href="/login" style={styles.link}>Sign In</Link>
         </div>
       </div>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundImage: 'url("https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=2560&auto=format&fit=crop")',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    fontFamily: 'var(--font-heading), sans-serif',
+    position: 'relative',
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0, left: 0, width: '100%', height: '100%',
+    backgroundColor: 'rgba(20, 10, 30, 0.4)',
+    zIndex: 1,
+  },
+  card: {
+    position: 'relative',
+    zIndex: 2,
+    width: '100%',
+    maxWidth: '430px',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    borderRadius: '24px',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  title: {
+    color: '#ffffff',
+    fontSize: '1.8rem',
+    fontWeight: 500,
+    marginBottom: '25px',
+    letterSpacing: '0.5px',
+  },
+  form: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    alignItems: 'center'
+  },
+  input: {
+    width: '100%',
+    padding: '14px 20px',
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '30px',
+    color: '#ffffff',
+    fontSize: '0.95rem',
+    outline: 'none',
+    transition: 'all 0.2s',
+  },
+  submitBtn: {
+    width: '100%',
+    padding: '15px',
+    backgroundColor: 'rgba(115, 30, 55, 0.9)',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '30px',
+    fontSize: '1rem',
+    fontWeight: 600,
+    cursor: 'pointer',
+    marginTop: '15px',
+    transition: 'background-color 0.2s',
+    letterSpacing: '0.5px',
+  },
+  link: {
+    color: '#ffffff',
+    fontSize: '0.85rem',
+    textDecoration: 'underline',
+    cursor: 'pointer',
+    opacity: 0.9,
+  },
+  errorBanner: {
+    width: '100%',
+    padding: '10px',
+    backgroundColor: 'rgba(220, 38, 38, 0.8)',
+    color: 'white',
+    borderRadius: '8px',
+    textAlign: 'center',
+    marginBottom: '20px',
+    fontSize: '0.85rem',
+  }
+};

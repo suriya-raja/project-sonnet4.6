@@ -6,6 +6,8 @@ export const metadata = {
   keywords: 'food sharing, food donation, NGO, surplus food, community',
 };
 
+import Providers from '@/components/Providers';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -15,7 +17,9 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

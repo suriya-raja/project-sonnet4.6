@@ -66,3 +66,15 @@ ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow all on users" ON users FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all on food_listings" ON food_listings FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all on orders" ON orders FOR ALL USING (true) WITH CHECK (true);
+
+-- ========================================
+-- UPDATES FOR GOOGLE SSO & OTP PASSWORD RESET
+-- ========================================
+ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT UNIQUE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_otp VARCHAR(6);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_otp_expires_at TIMESTAMPTZ;
+
+-- Make password_hash, phone, and city nullable to support Google Login without requiring them initially
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
+ALTER TABLE users ALTER COLUMN phone DROP NOT NULL;
+ALTER TABLE users ALTER COLUMN city DROP NOT NULL;
