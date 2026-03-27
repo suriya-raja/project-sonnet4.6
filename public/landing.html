@@ -368,15 +368,7 @@
         scene.add(starField);
 
 
-        // Astronaut and Asteroids
-        let astronaut;
-        const gltfLoader = new THREE.GLTFLoader();
-        gltfLoader.load('https://raw.githubusercontent.com/google/model-viewer/master/packages/shared-assets/models/Astronaut.glb', (gltf) => {
-            astronaut = gltf.scene;
-            astronaut.scale.set(2.0, 2.0, 2.0);
-            astronaut.position.set(-3, 0, -1);
-            scene.add(astronaut);
-        });
+        // Background Scene Elements Here (Astronaut removed)
 
         
 
@@ -403,9 +395,24 @@
             }
         });
 
-        tl.to(globeParticles.scale, { x: 0.5, y: 0.5, z: 0.5 })
-          .to(globeParticles.position, { y: 2, z: -5 }, 0)
-          .to(".hero-content", { opacity: 0, y: -100 }, 0);
+        // Immersive Scroll: Dive into the Earth!
+        tl.to(globeParticles.scale, { x: 12, y: 12, z: 12 })
+          .to(globeParticles.position, { y: -5, z: 5 }, 0)
+          .to(".hero-content", { scale: 2.5, opacity: 0, y: -50 }, 0);
+
+        // Initial Cinematic Page Load Entrance
+        gsap.fromTo(globeParticles.position, 
+            { z: -80, y: -20 }, 
+            { z: 0, y: 0, duration: 2.5, ease: "power3.out" }
+        );
+        gsap.fromTo(globeParticles.rotation,
+            { x: -Math.PI / 2, y: -Math.PI },
+            { x: 23.5 * Math.PI / 180, y: 0.8, duration: 3, ease: "power3.out" }
+        );
+        gsap.fromTo(".hero-content",
+            { scale: 0.5, opacity: 0, z: -500 },
+            { scale: 1, opacity: 1, z: 0, duration: 2, delay: 0.5, ease: "back.out(1.5)" }
+        );
 
         gsap.fromTo(".crisis-text-left", 
             { opacity: 0, x: -100, z: -500 }, 
@@ -486,15 +493,7 @@
             starGeometry.attributes.position.needsUpdate = true;
 
 
-            if (astronaut) {
-                const time = Date.now() * 0.001;
-                astronaut.position.x = Math.sin(time * 0.2) * 8; // Float wide left and right
-                astronaut.position.y = Math.cos(time * 0.15) * 5; // Float high and low
-                astronaut.position.z = Math.sin(time * 0.3) * 3 - 2; // Move smoothly back and front
-                astronaut.rotation.x = Math.sin(time * 0.2) * 0.5;
-                astronaut.rotation.y += 0.003;
-                astronaut.rotation.z = Math.cos(time * 0.2) * 0.5;
-            }
+            // (Astronaut animation removed)
 
             
 
