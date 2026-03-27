@@ -72,6 +72,25 @@ export default function DashboardPage() {
               View on map →
             </div>
           </div>
+
+          <div
+            className="glass-card dashboard-action-card farm animate-fade-in-up delay-4"
+            onClick={() => router.push('/dashboard/farm')}
+          >
+            <span className="dashboard-action-icon animate-float" style={{ animationDelay: '1s' }}>🌾</span>
+            <h2 className="dashboard-action-title">Farm Rescue</h2>
+            <p className="dashboard-action-desc">
+              Save unsold farm produce — post or claim crops from nearby farmers
+            </p>
+            <div style={{
+              marginTop: 'var(--space-lg)',
+              color: '#a78bfa',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+            }}>
+              Rescue produce →
+            </div>
+          </div>
         </div>
 
         {/* Quick Stats */}

@@ -1289,6 +1289,105 @@ textarea {
   margin-bottom: var(--space-lg);
 }
 
+/* ========== FARM MODULE — KHETSETU ========== */
+.dashboard-action-card.farm::before {
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+}
+
+/* Crop filter chips */
+.farm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  white-space: nowrap;
+}
+
+.farm-chip:hover {
+  background: var(--bg-glass-strong);
+  border-color: var(--border-glow);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.farm-chip.active {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #c4b5fd;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.15);
+}
+
+/* Farm produce cards */
+.farm-produce-card {
+  padding: 0;
+  overflow: hidden;
+  transition: all var(--transition-slow);
+  animation: fadeInUp 0.4s ease forwards;
+  opacity: 0;
+}
+
+.farm-produce-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.farm-card-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background: var(--bg-glass);
+}
+
+.farm-card-content {
+  padding: var(--space-lg);
+}
+
+.farm-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+}
+
+.farm-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-bottom: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* Farm price tags */
+.farm-price-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  white-space: nowrap;
+}
+
+.farm-price-tag.free {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-emerald-light);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
   .navbar {
