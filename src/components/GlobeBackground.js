@@ -23,34 +23,7 @@ export default function GlobeBackground() {
     }
     containerRef.current.appendChild(renderer.domElement);
 
-    // GLOBE
-    const radius = 2.5;
-    const segments = 64;
-    
-    // Base solid sphere (dark ocean/base)
-    const baseGeometry = new THREE.SphereGeometry(radius, segments, segments);
-    const baseMaterial = new THREE.MeshPhongMaterial({
-      color: 0x051b24,
-      emissive: 0x00111a,
-      specular: 0x111111,
-      shininess: 10,
-    });
-    const globe = new THREE.Mesh(baseGeometry, baseMaterial);
-    scene.add(globe);
-
-    // Wireframe overlay to look like holographic earth geometry
-    const wireframeGeometry = new THREE.SphereGeometry(radius + 0.02, 32, 32);
-    const wireframeMaterial = new THREE.MeshBasicMaterial({
-      color: 0x0088ff, // Wave blue
-      wireframe: true,
-      transparent: true,
-      opacity: 0.15
-    });
-    const wireframeGlobe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
-    globe.add(wireframeGlobe);
-
-    // dots are actually small squares by default in Three.js Points
-    // We create a tiny circular texture to make them look like "real dots"
+    // 1. CREATE DOT TEXTURE (for clear circular points)
     const createDotTexture = () => {
       const canvas = document.createElement('canvas');
       canvas.width = 64;
@@ -65,94 +38,98 @@ export default function GlobeBackground() {
       ctx.fillRect(0, 0, 64, 64);
       return new THREE.CanvasTexture(canvas);
     };
-
     const dotTexture = createDotTexture();
 
-    // DOTTED MANNER: Random "continents" points or bumps using a points layer
-    const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 8000;
-    const posArray = new Float32Array(particlesCount * 3);
+    // 2. GLOBE GEOMETRY
+    const radius = 2.5;
+    const globe = new THREE.Group();
+    scene.add(globe);
+
+    // High-resolution sphere geometry for structured look
+    const globeGeometry = new THREE.SphereGeometry(radius, 48, 48);
     
-    for(let i=0; i<particlesCount * 3; i+=3) {
-      // Random points on a sphere
-      const r = radius + 0.05;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 2 - 1);
-      
-      posArray[i] = r * Math.sin(phi) * Math.cos(theta);
-      posArray[i+1] = r * Math.sin(phi) * Math.sin(theta);
-      posArray[i+2] = r * Math.cos(phi);
-    }
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    // 3. DOTTED POINTS (Vertices of the geometry)
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.05,
+      size: 0.025, // Tiny crisp dots
       map: dotTexture,
       color: 0x00d2ff, // Bright Wave blue
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.9,
       blending: THREE.AdditiveBlending,
       depthWrite: false
     });
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    const particlesMesh = new THREE.Points(globeGeometry, particlesMaterial);
     globe.add(particlesMesh);
 
-    // FLOATING GEOMETRY
+    // 4. DELICATE WIREFRAME (Subtle lines)
+    const wireframeMaterial = new THREE.MeshBasicMaterial({
+      color: 0x0088ff,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.12, 
+    });
+    const wireframeMesh = new THREE.Mesh(globeGeometry, wireframeMaterial);
+    globe.add(wireframeMesh);
+
+    // 5. OCCLUSION SPHERE (Very dark/invisible center)
+    const occlusionMaterial = new THREE.MeshPhongMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 0.2, 
+    });
+    const occlusionMesh = new THREE.Mesh(globeGeometry, occlusionMaterial);
+    globe.add(occlusionMesh);
+
+    // 6. FLOATING GEOMETRY
     const floatingShapes = new THREE.Group();
     scene.add(floatingShapes);
     
     for (let i = 0; i < 20; i++) {
-        const geo = new THREE.IcosahedronGeometry(Math.random() * 0.15 + 0.05, 0);
+        const geo = new THREE.IcosahedronGeometry(Math.random() * 0.12 + 0.05, 0);
         const mat = new THREE.MeshBasicMaterial({
             color: 0x00d2ff,
             wireframe: true,
             transparent: true,
-            opacity: 0.3
+            opacity: 0.2
         });
         const shape = new THREE.Mesh(geo, mat);
-        
         shape.position.set(
             (Math.random() - 0.5) * 15,
             (Math.random() - 0.5) * 12,
             (Math.random() - 0.5) * 8 - 3
         );
-        
         shape.userData = {
             rx: Math.random() * 0.01,
             ry: Math.random() * 0.01,
             rz: Math.random() * 0.01
         };
-        
         floatingShapes.add(shape);
     }
 
     // LIGHTS
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
-    
-    const pointLight = new THREE.PointLight(0x00d2ff, 3, 60); 
+    const pointLight = new THREE.PointLight(0x00d2ff, 4, 60); 
     pointLight.position.set(10, 5, 10);
     scene.add(pointLight);
 
-    camera.position.z = 5.0; // Zoomed in closer
+    camera.position.z = 5.2; 
 
     // ANIMATION LOOP
     let animationId;
     const animate = () => {
       globe.rotation.y += 0.0015; 
       globe.rotation.x = 0.2; 
-      
       floatingShapes.children.forEach(shape => {
         shape.rotation.x += shape.userData.rx;
         shape.rotation.y += shape.userData.ry;
         shape.rotation.z += shape.userData.rz;
       });
-
       renderer.render(scene, camera);
       animationId = requestAnimationFrame(animate);
     };
     animate();
 
-    // RESIZE
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -166,12 +143,10 @@ export default function GlobeBackground() {
       if (containerRef.current?.firstChild) {
         containerRef.current.removeChild(renderer.domElement);
       }
-      baseGeometry.dispose();
-      baseMaterial.dispose();
-      wireframeGeometry.dispose();
-      wireframeMaterial.dispose();
-      particlesGeometry.dispose();
+      globeGeometry.dispose();
       particlesMaterial.dispose();
+      wireframeMaterial.dispose();
+      occlusionMaterial.dispose();
       dotTexture.dispose();
       renderer.dispose();
     };
@@ -188,7 +163,6 @@ export default function GlobeBackground() {
         height: '100%',
         zIndex: 0,
         overflow: 'hidden',
-        // Transparent background so we don't block anything
       }} 
     />
   );
