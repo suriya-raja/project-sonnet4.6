@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import GlobeBackground from '@/components/GlobeBackground';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -116,6 +117,7 @@ export default function RegisterPage() {
 
   return (
     <div style={styles.container}>
+      <GlobeBackground />
       <div style={styles.overlay}></div>
       
       <div style={styles.card}>
@@ -262,11 +264,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#03050a', 
-    backgroundImage: "url('/earth-horizon.jpg')", 
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'bottom center', 
-    backgroundSize: '100% auto', 
+    backgroundColor: '#0b101e',
     fontFamily: 'var(--font-heading), sans-serif',
     position: 'relative',
     overflow: 'hidden'
@@ -274,7 +272,7 @@ const styles = {
   overlay: {
     position: 'absolute',
     top: 0, left: 0, width: '100%', height: '100%',
-    backgroundColor: 'rgba(3, 5, 10, 0.2)', 
+    backgroundColor: 'rgba(11, 16, 30, 0.3)',
     zIndex: 1,
   },
   card: {

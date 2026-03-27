@@ -11,141 +11,129 @@ export default function GlobeBackground() {
 
     // SCENE, CAMERA, RENDERER
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#03050a'); // Very deep space background
-    
-    // Subtle stars
-    const starsGeometry = new THREE.BufferGeometry();
-    const starsCount = 1500;
-    const posArray = new Float32Array(starsCount * 3);
-    for(let i = 0; i < starsCount * 3; i++) {
-        // distribute stars randomly
-      posArray[i] = (Math.random() - 0.5) * 80;
-    }
-    starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const starsMaterial = new THREE.PointsMaterial({
-      size: 0.05,
-      color: 0xffecec, // Slightly warm stars
-      transparent: true,
-      opacity: 0.7
-    });
-    const stars = new THREE.Points(starsGeometry, starsMaterial);
-    scene.add(stars);
-
+    scene.background = new THREE.Color('#0b101e'); // Dark background
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // CINEMATIC COLOR ENCODING & TONE MAPPING FOR REALISTIC CONTRAST
-    // (Helps colors pop and shadows look deep without washing out)
-    if (THREE.SRGBColorSpace) {
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-    } else {
-      renderer.outputEncoding = 3001; // Legacy sRGBEncoding
-    }
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 2.2; // Huge boost to brightness and contrast
     
+    // Attempt to clean up before appending
     while (containerRef.current.firstChild) {
       containerRef.current.removeChild(containerRef.current.firstChild);
     }
     containerRef.current.appendChild(renderer.domElement);
 
-    // TEXTURE LOADER
-    const textureLoader = new THREE.TextureLoader();
-    
-    // High Quality Earth Textures
-    const earthMap = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
-    if (THREE.SRGBColorSpace) {
-      earthMap.colorSpace = THREE.SRGBColorSpace;
-    } else {
-      earthMap.encoding = 3001; // Legacy
-    }
-    
-    const earthSpecular = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg');
-    const earthNormal = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_normal_2048.jpg');
-    const cloudMap = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_2048.png');
-
-    const earthGroup = new THREE.Group();
-    scene.add(earthGroup);
-
-    // 1. MAIN EARTH SPHERE (PBR or High-quality Phong)
+    // GLOBE
     const radius = 2.5;
-    const geometry = new THREE.SphereGeometry(radius, 64, 64);
-    const material = new THREE.MeshPhongMaterial({
-      map: earthMap,
-      specularMap: earthSpecular,
-      normalMap: earthNormal,
-      specular: new THREE.Color(0x333333), // Sharp sun reflections on oceans
-      shininess: 35, // High shininess for water
-      normalScale: new THREE.Vector2(0.85, 0.85) // Pop the terrain relief more
-    });
-    const earthMesh = new THREE.Mesh(geometry, material);
+    const segments = 64;
     
-    // Slight axial tilt for realism (~23.5 degrees)
-    earthMesh.rotation.z = 23.5 * Math.PI / 180;
-    earthGroup.add(earthMesh);
-
-    // 2. CLOUDS SHELL
-    const cloudGeometry = new THREE.SphereGeometry(radius + 0.04, 64, 64);
-    const cloudMaterial = new THREE.MeshPhongMaterial({
-      map: cloudMap,
-      transparent: true,
-      opacity: 0.9,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
-      depthWrite: false
+    // Base solid sphere (dark ocean/base)
+    const baseGeometry = new THREE.SphereGeometry(radius, segments, segments);
+    const baseMaterial = new THREE.MeshPhongMaterial({
+      color: 0x051b24,
+      emissive: 0x00111a,
+      specular: 0x111111,
+      shininess: 10,
     });
-    const cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
-    cloudMesh.rotation.z = 23.5 * Math.PI / 180;
-    earthGroup.add(cloudMesh);
+    const globe = new THREE.Mesh(baseGeometry, baseMaterial);
+    scene.add(globe);
 
-    // 3. ATMOSPHERE GLOW
-    const atmosGeometry = new THREE.SphereGeometry(radius + 0.15, 64, 64);
-    const atmosMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00aaff, // Blue scattering
+    // Wireframe overlay to look like holographic earth geometry
+    const wireframeGeometry = new THREE.SphereGeometry(radius + 0.02, 32, 32);
+    const wireframeMaterial = new THREE.MeshBasicMaterial({
+      color: 0x0088ff, // Wave blue
+      wireframe: true,
       transparent: true,
-      opacity: 0.15,
-      side: THREE.BackSide,
+      opacity: 0.15
+    });
+    const wireframeGlobe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
+    globe.add(wireframeGlobe);
+
+    // DOTTED MANNER: Random "continents" points or bumps using a points layer
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 2000;
+    const posArray = new Float32Array(particlesCount * 3);
+    
+    for(let i=0; i<particlesCount * 3; i+=3) {
+      // Random points on a sphere
+      const r = radius + 0.05;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 2 - 1);
+      
+      posArray[i] = r * Math.sin(phi) * Math.cos(theta);
+      posArray[i+1] = r * Math.sin(phi) * Math.sin(theta);
+      posArray[i+2] = r * Math.cos(phi);
+    }
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.03,
+      color: 0x0088ff, // Wave blue dotted particles
+      transparent: true,
+      opacity: 0.8,
       blending: THREE.AdditiveBlending
     });
-    const atmosMesh = new THREE.Mesh(atmosGeometry, atmosMaterial);
-    earthGroup.add(atmosMesh);
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    globe.add(particlesMesh);
+
+    // FLOATING GEOMETRY
+    const floatingShapes = new THREE.Group();
+    scene.add(floatingShapes);
+    
+    for (let i = 0; i < 15; i++) {
+      const geo = new THREE.OctahedronGeometry(Math.random() * 0.2 + 0.05);
+      const mat = new THREE.MeshBasicMaterial({
+        color: 0x00bbff, // Lighter wave blue
+        wireframe: true,
+        transparent: true,
+        opacity: 0.4
+      });
+      const shape = new THREE.Mesh(geo, mat);
+      
+      shape.position.x = (Math.random() - 0.5) * 12;
+      shape.position.y = (Math.random() - 0.5) * 10;
+      shape.position.z = (Math.random() - 0.5) * 5 - 2;
+      
+      shape.userData = {
+        rx: Math.random() * 0.02,
+        ry: Math.random() * 0.02,
+        rz: Math.random() * 0.02
+      };
+      
+      floatingShapes.add(shape);
+    }
 
     // LIGHTS
-    // Moderate ambient light so the night side of Earth isn't totally black
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); 
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     scene.add(ambientLight);
     
-    // Strong primary sun light
-    const sunLight = new THREE.DirectionalLight(0xffeedd, 5.0); // Very warm and bright sun
-    sunLight.position.set(5, 3, 5);
-    scene.add(sunLight);
-    
-    // Strong blue rim light to outline the dark side brightly
-    const backLight = new THREE.PointLight(0x00aaff, 3.5, 50);
-    backLight.position.set(-6, -2, -6);
+    const pointLight = new THREE.PointLight(0x0088ff, 2, 50); // Wave blue light
+    pointLight.position.set(5, 3, 5);
+    scene.add(pointLight);
+
+    const backLight = new THREE.PointLight(0x0044ff, 1.5, 50); // Deep wave blue
+    backLight.position.set(-5, -3, -5);
     scene.add(backLight);
 
-    camera.position.z = 3.8; // Move camera much closer to make the globe massive and central
+    camera.position.z = 6.5;
 
     // ANIMATION LOOP
     let animationId;
     const animate = () => {
-      // Rotation around the tilted Y axis
-      earthMesh.rotateY(0.001);
-      // Clouds rotate slightly faster
-      cloudMesh.rotateY(0.0012); 
-
-      // Slowly drift the camera or group for dynamic feeling
-      earthGroup.rotation.y += 0.0001;
+      globe.rotation.y += 0.001; 
+      globe.rotation.x = 0.2; 
+      
+      floatingShapes.children.forEach(shape => {
+        shape.rotation.x += shape.userData.rx;
+        shape.rotation.y += shape.userData.ry;
+        shape.rotation.z += shape.userData.rz;
+      });
 
       renderer.render(scene, camera);
       animationId = requestAnimationFrame(animate);
     };
     animate();
 
-    // RESIZE HANDLER
+    // RESIZE
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -159,21 +147,12 @@ export default function GlobeBackground() {
       if (containerRef.current?.firstChild) {
         containerRef.current.removeChild(renderer.domElement);
       }
-      
-      geometry.dispose();
-      material.dispose();
-      cloudGeometry.dispose();
-      cloudMaterial.dispose();
-      atmosGeometry.dispose();
-      atmosMaterial.dispose();
-      starsGeometry.dispose();
-      starsMaterial.dispose();
-      
-      earthMap.dispose();
-      earthSpecular.dispose();
-      earthNormal.dispose();
-      cloudMap.dispose();
-      
+      baseGeometry.dispose();
+      baseMaterial.dispose();
+      wireframeGeometry.dispose();
+      wireframeMaterial.dispose();
+      particlesGeometry.dispose();
+      particlesMaterial.dispose();
       renderer.dispose();
     };
   }, []);
@@ -189,7 +168,7 @@ export default function GlobeBackground() {
         height: '100%',
         zIndex: 0,
         overflow: 'hidden',
-        background: '#03050a'
+        background: '#0b101e'
       }} 
     />
   );

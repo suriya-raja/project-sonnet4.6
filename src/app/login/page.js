@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useGoogleLogin } from '@react-oauth/google';
+import GlobeBackground from '@/components/GlobeBackground';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -269,6 +270,7 @@ export default function LoginPage() {
 
   return (
     <div style={styles.container}>
+      <GlobeBackground />
       <div style={styles.overlay}></div>
       
       <div style={styles.card}>
@@ -298,11 +300,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#03050a', // Dark space color for top
-    backgroundImage: "url('/earth-horizon.jpg')", // The user's uploaded image
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'bottom center', // Docked at the bottom
-    backgroundSize: '100% auto', // Expands full width across the bottom
+    backgroundColor: '#0b101e',
     fontFamily: 'var(--font-heading), sans-serif',
     position: 'relative',
     overflow: 'hidden'
@@ -310,7 +308,7 @@ const styles = {
   overlay: {
     position: 'absolute',
     top: 0, left: 0, width: '100%', height: '100%',
-    backgroundColor: 'rgba(3, 5, 10, 0.2)', // Light tint to blend edges if needed
+    backgroundColor: 'rgba(11, 16, 30, 0.3)',
     zIndex: 1,
   },
   card: {
