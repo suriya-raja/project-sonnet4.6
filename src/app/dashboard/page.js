@@ -89,6 +89,22 @@ export default function DashboardPage() {
               Browse Farms →
             </div>
           </div>
+          <div
+            className="glass-card dashboard-action-card farm animate-fade-in-up delay-4"
+            onClick={() => router.push('/dashboard/health')}
+            style={{ border: '1px solid rgba(16, 185, 129, 0.2)', background: 'rgba(10, 10, 10, 0.6)', backdropFilter: 'blur(16px)', transition: 'all 0.3s' }}
+            onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-10px)'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(16, 185, 129, 0.2)'; e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.5)'; }}
+            onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.2)'; }}
+          >
+            <span className="dashboard-action-icon animate-float" style={{ animationDelay: '1.5s', filter: 'drop-shadow(0 0 10px rgba(16, 185, 129, 0.4))' }}>🧬</span>
+            <h2 className="dashboard-action-title" style={{ color: '#10b981', textTransform: 'uppercase' }}>Your Health</h2>
+            <p className="dashboard-action-desc" style={{ color: '#bbcabf' }}>
+              Track your daily calories, get AI-driven diet blueprints, and join the local wellness community.
+            </p>
+            <div style={{ marginTop: 'var(--space-lg)', color: '#10b981', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              Launch Scanner →
+            </div>
+          </div>
         </div>
 
         {/* Quick Stats */}

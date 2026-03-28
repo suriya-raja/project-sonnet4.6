@@ -4,12 +4,9 @@ import { useEffect } from 'react';
 
 export default function HomePage() {
   useEffect(() => {
-    window.location.href = '/landing.html';
+    // Immediate redirect to the optimized landing page
+    window.location.replace('/landing.html');
   }, []);
 
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0a' }}>
-      <h1 style={{ color: '#00e5ff', fontFamily: 'monospace', letterSpacing: '0.2em' }}>INITIALIZING NOGIRR NEURAL NETWORK...</h1>
-    </div>
-  );
+  return null; // No flash, no UI, just a clean jump
 }

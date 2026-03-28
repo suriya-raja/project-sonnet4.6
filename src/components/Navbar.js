@@ -33,6 +33,7 @@ export default function Navbar() {
         <Link href="/dashboard/farm" className={isActive('/dashboard/farm')}>🌾 Farm</Link>
         <Link href="/dashboard/orders" className={isActive('/dashboard/orders')}>Orders</Link>
         <Link href="/dashboard/scoreboard" className={isActive('/dashboard/scoreboard')}>🏆 Score</Link>
+        <Link href="/dashboard/health" className={isActive('/dashboard/health')}>🧬 Health</Link>
       </div>
 
       <div className="navbar-user">

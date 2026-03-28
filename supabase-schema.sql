@@ -119,3 +119,61 @@ BEGIN
   WHERE id = user_id;
 END;
 $$ LANGUAGE plpgsql;
+
+-- ========================================
+-- YOUR HEALTH MODULE
+-- ========================================
+
+-- Health Profiles
+CREATE TABLE IF NOT EXISTS health_profiles (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) UNIQUE,
+  dietary_preference TEXT DEFAULT 'Unknown', -- Vegetarian, Non-Vegetarian, Vegan
+  base_calorie_target INTEGER DEFAULT 2000,
+  medical_issues TEXT,
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Meal Logs (Calorie Tracker)
+CREATE TABLE IF NOT EXISTS meal_logs (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  meal_description TEXT NOT NULL,
+  calories INTEGER DEFAULT 0,
+  protein INTEGER DEFAULT 0,
+  carbs INTEGER DEFAULT 0,
+  fats INTEGER DEFAULT 0,
+  fiber INTEGER DEFAULT 0,
+  missing_nutrients_suggested TEXT,
+  logged_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Community Hub Posts
+CREATE TABLE IF NOT EXISTS community_posts (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  content TEXT NOT NULL,
+  post_type TEXT DEFAULT 'chat', -- 'chat', 'recipe', 'diet_plan'
+  latitude DOUBLE PRECISION,
+  longitude DOUBLE PRECISION,
+  city TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Security Policies for Health Module
+ALTER TABLE health_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE meal_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE community_posts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow all on health_profiles" ON health_profiles;
+DROP POLICY IF EXISTS "Allow all on meal_logs" ON meal_logs;
+DROP POLICY IF EXISTS "Allow all on community_posts" ON community_posts;
+
+CREATE POLICY "Allow all on health_profiles" ON health_profiles FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all on meal_logs" ON meal_logs FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all on community_posts" ON community_posts FOR ALL USING (true) WITH CHECK (true);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_meal_logs_user ON meal_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_community_posts_geo ON community_posts(latitude, longitude);
