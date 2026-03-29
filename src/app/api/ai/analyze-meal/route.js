@@ -29,6 +29,10 @@ export async function POST(req) {
       
       Calculate or estimate the total calories and macronutrients for this meal based on standard serving sizes.
       Then, compare it to a standard 2000 calorie/day baseline, and output a short sentence suggesting what nutrient groups are missing and what specific foods (respecting their dietary preference) they should eat next to attain those basic human nutrient needs.
+      
+      Additionally, provide:
+      1. A confidence score (0-100) on how accurate you believe this nutritional estimate is based on the description provided.
+      2. An estimated environmental impact score: Calculate the equivalent Carbon Footprint saved (in kg CO2) by rescuing this specific type/quantity of food instead of wasting it (use global averages for food types).
 
       You MUST respond in ONLY strict JSON format matching exactly this schema, with no markdown formatting or backticks:
       {
@@ -38,6 +42,8 @@ export async function POST(req) {
         "carbs": 50,
         "fats": 15,
         "fiber": 5,
+        "confidence_score": 92,
+        "carbon_impact_kg": 1.25,
         "missing_nutrients_suggested": "You are low on fiber and vitamins. Suggestion: Add a side of roasted broccoli or a bowl of mixed berries."
       }
     `;

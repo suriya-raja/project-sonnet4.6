@@ -31,8 +31,8 @@ export default function GlobeBackground() {
       const ctx = canvas.getContext('2d');
       const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
       gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      gradient.addColorStop(0.2, 'rgba(0, 210, 255, 1)');
-      gradient.addColorStop(0.5, 'rgba(0, 210, 255, 0.3)');
+      gradient.addColorStop(0.2, 'rgba(0, 229, 255, 1)');
+      gradient.addColorStop(0.5, 'rgba(0, 229, 255, 0.3)');
       gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 64, 64);
@@ -40,91 +40,116 @@ export default function GlobeBackground() {
     };
     const dotTexture = createDotTexture();
 
-    // 2. GLOBE GEOMETRY
+    // 2. STARFIELD (Deep space effect)
+    const starsGeometry = new THREE.BufferGeometry();
+    const starsCount = 2000;
+    const posArray = new Float32Array(starsCount * 3);
+    for(let i = 0; i < starsCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 60;
+    }
+    starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const starsMaterial = new THREE.PointsMaterial({
+        size: 0.015,
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.5,
+        depthWrite: false
+    });
+    const starsParticles = new THREE.Points(starsGeometry, starsMaterial);
+    scene.add(starsParticles);
+
+    // 3. GLOBE GEOMETRY
     const radius = 2.5;
     const globe = new THREE.Group();
     scene.add(globe);
 
-    // High-resolution sphere geometry for structured look
-    const globeGeometry = new THREE.SphereGeometry(radius, 48, 48);
+    const globeGeometry = new THREE.SphereGeometry(radius, 64, 64);
     
-    // 3. DOTTED POINTS (Vertices of the geometry)
+    // 4. DOTTED POINTS (Vertices of the geometry)
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.025, // Tiny crisp dots
+      size: 0.035,
       map: dotTexture,
-      color: 0x00d2ff, // Bright Wave blue
+      color: 0x00e5ff, 
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.8,
       blending: THREE.AdditiveBlending,
       depthWrite: false
     });
     const particlesMesh = new THREE.Points(globeGeometry, particlesMaterial);
     globe.add(particlesMesh);
 
-    // 4. DELICATE WIREFRAME (Subtle lines)
-    const wireframeMaterial = new THREE.MeshBasicMaterial({
-      color: 0x0088ff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.12, 
+    // 5. INNER NEURAL GLOW
+    const innerGeometry = new THREE.SphereGeometry(radius * 0.98, 32, 32);
+    const innerMaterial = new THREE.MeshBasicMaterial({
+        color: 0x00e5ff,
+        transparent: true,
+        opacity: 0.02,
+        wireframe: true
     });
-    const wireframeMesh = new THREE.Mesh(globeGeometry, wireframeMaterial);
-    globe.add(wireframeMesh);
+    const innerMesh = new THREE.Mesh(innerGeometry, innerMaterial);
+    globe.add(innerMesh);
 
-    // 5. OCCLUSION SPHERE (Very dark/invisible center)
-    const occlusionMaterial = new THREE.MeshPhongMaterial({
-      color: 0x000000,
-      transparent: true,
-      opacity: 0.2, 
-    });
-    const occlusionMesh = new THREE.Mesh(globeGeometry, occlusionMaterial);
-    globe.add(occlusionMesh);
-
-    // 6. FLOATING GEOMETRY
+    // 6. FLOATING GEOMETRY (Data Nodes)
     const floatingShapes = new THREE.Group();
     scene.add(floatingShapes);
     
-    for (let i = 0; i < 20; i++) {
-        const geo = new THREE.IcosahedronGeometry(Math.random() * 0.12 + 0.05, 0);
+    for (let i = 0; i < 30; i++) {
+        const geo = new THREE.OctahedronGeometry(Math.random() * 0.1 + 0.05, 0);
         const mat = new THREE.MeshBasicMaterial({
-            color: 0x00d2ff,
+            color: 0x00e5ff,
             wireframe: true,
             transparent: true,
-            opacity: 0.2
+            opacity: 0.3
         });
         const shape = new THREE.Mesh(geo, mat);
+        const angle1 = Math.random() * Math.PI * 2;
+        const angle2 = Math.random() * Math.PI * 2;
+        const d = 4 + Math.random() * 3;
         shape.position.set(
-            (Math.random() - 0.5) * 15,
-            (Math.random() - 0.5) * 12,
-            (Math.random() - 0.5) * 8 - 3
+            Math.cos(angle1) * Math.sin(angle2) * d,
+            Math.sin(angle1) * Math.sin(angle2) * d,
+            Math.cos(angle2) * d
         );
         shape.userData = {
-            rx: Math.random() * 0.01,
-            ry: Math.random() * 0.01,
-            rz: Math.random() * 0.01
+            rx: Math.random() * 0.02,
+            ry: Math.random() * 0.02,
+            rz: Math.random() * 0.02,
+            float_offset: Math.random() * Math.PI * 2
         };
         floatingShapes.add(shape);
     }
 
     // LIGHTS
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambientLight);
-    const pointLight = new THREE.PointLight(0x00d2ff, 4, 60); 
-    pointLight.position.set(10, 5, 10);
-    scene.add(pointLight);
-
-    camera.position.z = 5.2; 
+    
+    camera.position.z = 6; 
 
     // ANIMATION LOOP
     let animationId;
+    let clock = new THREE.Clock();
+
     const animate = () => {
-      globe.rotation.y += 0.0015; 
-      globe.rotation.x = 0.2; 
+      const elapsedTime = clock.getElapsedTime();
+
+      // Rotate Globe
+      globe.rotation.y = elapsedTime * 0.1; 
+      globe.rotation.x = Math.sin(elapsedTime * 0.2) * 0.1;
+
+      // Pulse Particles (Neural Wave)
+      particlesMaterial.opacity = 0.6 + Math.sin(elapsedTime * 2) * 0.2;
+      particlesMaterial.size = 0.035 + Math.sin(elapsedTime * 3) * 0.005;
+
+      // Animate Stars
+      starsParticles.rotation.y = -elapsedTime * 0.01;
+
+      // Animate Floating Nodes
       floatingShapes.children.forEach(shape => {
         shape.rotation.x += shape.userData.rx;
         shape.rotation.y += shape.userData.ry;
-        shape.rotation.z += shape.userData.rz;
+        shape.position.y += Math.sin(elapsedTime + shape.userData.float_offset) * 0.005;
       });
+
       renderer.render(scene, camera);
       animationId = requestAnimationFrame(animate);
     };

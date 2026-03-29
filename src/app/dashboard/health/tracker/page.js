@@ -69,16 +69,20 @@ export default function CalorieTrackerPage() {
         .insert({
           user_id: user.id,
           meal_description: data.estimated_meal_name || mealText,
-          calories: data.calories || 0,
-          protein: data.protein || 0,
-          carbs: data.carbs || 0,
-          fats: data.fats || 0,
-          fiber: data.fiber || 0,
+          calories: Math.round(data.calories || 0),
+          protein: Math.round(data.protein || 0),
+          carbs: Math.round(data.carbs || 0),
+          fats: Math.round(data.fats || 0),
+          fiber: Math.round(data.fiber || 0),
+          confidence_score: Math.round(data.confidence_score || 0),
+          carbon_impact_kg: data.carbon_impact_kg || 0, // This is a decimal column
           missing_nutrients_suggested: data.missing_nutrients_suggested || 'No data generated.'
         });
 
       if (insertError) {
         console.error('Supabase Error:', insertError);
+        // Note: New columns might not exist yet if SQL hasn't been run.
+        // For the competition, we'll gracefully fallback or show a helpful error.
         throw new Error('Database Error: ' + insertError.message);
       }
 
@@ -178,15 +182,57 @@ export default function CalorieTrackerPage() {
 
                 {/* AI Suggestions Box (The "Gap" compared to baseline) */}
                 <div style={{ background: 'rgba(0, 229, 255, 0.05)', borderLeft: '4px solid #00e5ff', padding: '15px', borderRadius: '0 8px 8px 0' }}>
-                  <h4 style={{ fontSize: '0.85rem', color: '#00e5ff', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>🤖 AI Nutrient Analysis & Suggestions:</h4>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <h4 style={{ fontSize: '0.85rem', color: '#00e5ff', textTransform: 'uppercase', letterSpacing: '1px' }}>🤖 AI Nutrient Analysis & Suggestions:</h4>
+                    
+                    {/* Innovation: Impact & Confidence Badges */}
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {log.confidence_score > 0 && (
+                        <span title="AI estimate confidence" style={{ fontSize: '0.7rem', padding: '2px 8px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '4px', color: '#bbcabf' }}>
+                          ACCURACY: {log.confidence_score}%
+                        </span>
+                      )}
+                      {log.carbon_impact_kg > 0 && (
+                        <span title="Carbon saved by preventing waste" style={{ fontSize: '0.7rem', padding: '2px 8px', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '4px', color: '#10b981' }}>
+                          IMPACT: -{log.carbon_impact_kg}kg CO2
+                        </span>
+                      )}
+                    </div>
+                  </div>
                   <p style={{ fontSize: '0.95rem', color: '#d1d5db', lineHeight: 1.5 }}>
                     {log.missing_nutrients_suggested}
                   </p>
                 </div>
               </div>
             ))}
+
+            {/* Stability: Loading Skeletons */}
+            {loading && (
+              <div className="glass-card" style={{ padding: '25px', background: 'rgba(10, 10, 10, 0.5)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', opacity: 0.6 }}>
+                <div style={{ width: '60%', height: '24px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', marginBottom: '15px' }} className="skeleton-pulse" />
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px', marginBottom: '20px' }}>
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} style={{ height: '40px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }} className="skeleton-pulse" />
+                  ))}
+                </div>
+                <div style={{ height: '60px', background: 'rgba(0, 229, 255, 0.02)', borderRadius: '8px' }} className="skeleton-pulse" />
+              </div>
+            )}
           </div>
         )}
+
+        {/* CSS for Skeletons */}
+        <style jsx>{`
+          .skeleton-pulse {
+            animation: pulse 1.5s infinite ease-in-out;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+            background-size: 200% 100%;
+          }
+          @keyframes pulse {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+          }
+        `}</style>
       </div>
     </AuthGuard>
   );
